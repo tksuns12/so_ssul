@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "886337838917",
+    "firebase_url": "https://so-ssul.firebaseio.com",
+    "project_id": "so-ssul",
+    "storage_bucket": "so-ssul.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:886337838917:android:119fbd65f32782d256a82c",
+        "android_client_info": {
+          "package_name": "com.crimsonfoot.sossul"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "886337838917-dj8se2utgr77u8ah3u5mveoco98prmbo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAgqM-ayTwzp6GaBqZtMlZ2iJY2PPPMJU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "886337838917-dj8se2utgr77u8ah3u5mveoco98prmbo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
