@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sossul/page_home.dart';
 import 'package:sossul/page_list.dart';
 import 'splash_animation.dart';
@@ -8,15 +9,14 @@ void main() => runApp(MyApp());
 int _selectedIndex = 0;
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: SplashAnimation1(),
-    );
-  }
+      return MaterialApp(
+        home: SplashAnimation1(),
+      );
+    }
 }
-
 
 class Home extends StatefulWidget {
   @override
@@ -32,7 +32,13 @@ class _HomeState extends State<Home> {
       ),
       home: Scaffold(
         appBar: AppBar(
-          leading: Hero(tag: 'logo', child: Icon(Icons.book, color: Colors.white, size: 30,)),
+          leading: Hero(
+              tag: 'logo',
+              child: Icon(
+                Icons.book,
+                color: Colors.white,
+                size: 30,
+              )),
           title: Text('AppBar'),
         ),
         body: Center(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'main.dart';
 
@@ -12,23 +13,45 @@ class _SplashAnimation1State extends State<SplashAnimation1>
     with SingleTickerProviderStateMixin {
   AnimationController controller;
   Animation animation;
+  bool virginity = true;
+
+  Future<void> getVirginity() async {
+    final prefs = await SharedPreferences.getInstance();
+    print("getVirginity executed");
+    if (prefs.getBool("isVirgin") == null) {
+      virginity = true;
+    } else {
+      virginity = prefs.getBool("isVirgin");
+    }
+  }
+
+  Future<void> _changeVirginity() async {
+    final prefs = await SharedPreferences.getInstance();
+    print("changeVirginity executed");
+    prefs.setBool("isVirgin", false);
+  }
+
   @override
   void initState() {
-    super.initState();
-    controller = AnimationController(
-      duration: Duration(seconds: 1),
-      vsync: this,
-    );
-    animation = ColorTween(begin: Colors.black45, end: Colors.purpleAccent)
-        .animate(controller);
-    controller.forward();
-    controller.addListener(() {
-      setState(() {});
-      if (controller.isCompleted) {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => SplashAnimation2()));
-      }
-    });
+    getVirginity().then((result){});
+    _changeVirginity();
+      super.initState();
+      controller = AnimationController(
+        duration: Duration(seconds: 1),
+        vsync: this,
+      );
+      animation = ColorTween(begin: Colors.black45, end: Colors.purpleAccent)
+          .animate(controller);
+      if (virginity)
+      {controller.forward();}
+      controller.addListener(() {
+        setState(() {});
+        if (controller.isCompleted && virginity) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => SplashAnimation2()));
+        }
+      });
+
   }
 
   @override
@@ -39,7 +62,8 @@ class _SplashAnimation1State extends State<SplashAnimation1>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    if (virginity)
+    {return Container(
       color: animation.value,
       child: Center(
         child: Hero(
@@ -51,7 +75,9 @@ class _SplashAnimation1State extends State<SplashAnimation1>
           tag: 'logo',
         ),
       ),
-    );
+    );} else {
+      return Home();
+    }
   }
 }
 
@@ -67,7 +93,7 @@ class _SplashAnimation2State extends State<SplashAnimation2> {
       color: Colors.purpleAccent,
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.only(left:40),
+          padding: const EdgeInsets.only(left: 40),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
