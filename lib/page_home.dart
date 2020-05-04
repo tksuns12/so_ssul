@@ -24,7 +24,7 @@ class _HomeBodyState extends State<HomeBody> {
             padding: const EdgeInsets.all(15.0),
             child: Swiper(itemCount: 3,scrollDirection: Axis.horizontal,
             itemBuilder: (BuildContext context, int index){
-              return Card(child: Text('Text1'), color: Colors.yellow,);
+              return Card(child: Text('Text1'), color: Colors.white,);
             },
               viewportFraction: 0.6,
               scale: 0.9,),

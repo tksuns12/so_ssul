@@ -39,7 +39,7 @@ class _HomeState extends State<Home> {
                 color: Colors.white,
                 size: 30,
               )),
-          title: Text('AppBar'),
+          title: Text('S.S'),
         ),
         body: Center(
           child: _bodyWidget[_selectedIndex],
