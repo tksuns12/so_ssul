@@ -27,10 +27,15 @@ dependencies:
   flutter_swiper: ^1.1.6
   flare_splash_screen: ^3.0.1
   animated_text_kit: ^2.0.1
+  flutter_native_splash: ^0.1.9
+  cloud_firestore: ^0.13.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter_native_splash:
+  color: "42a5f5"
 
 
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sossul/pages/page_create_account.dart';
 
 import '../abstract_basic_auth.dart';
 
@@ -9,6 +10,10 @@ class EmailSignIn extends StatefulWidget {
 }
 
 class _EmailSignInState extends State<EmailSignIn> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String email;
+  String password;
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -20,7 +25,12 @@ class _EmailSignInState extends State<EmailSignIn> {
               Icon(Icons.email),
               Column(
                 children: <Widget>[
-                  TextField(),
+                  TextField(
+                    keyboardType: TextInputType.emailAddress,
+                    onChanged: (text) {
+                      email = text;
+                    },
+                  ),
                   Text('이메일 형식에 안 맞습니다.'),
                 ],
               )
@@ -28,70 +38,58 @@ class _EmailSignInState extends State<EmailSignIn> {
           ),
           Row(
             children: <Widget>[
-              Icon(Icons.email),
+              Icon(Icons.vpn_key),
               Column(
                 children: <Widget>[
                   TextField(
                     maxLength: 12,
                     obscureText: true,
+                    onChanged: (text) {
+                      password = text;
+                    },
                   ),
                   Text('비밀번호는 숫자, 영문, 특수기호 포함 6~12자'),
                 ],
               )
             ],
           ),
-          FlatButton(child: Container(child: Text('Sign In'),), onPressed: () {signInWithEmail();},),
+          FlatButton(
+            child: Container(
+              child: Text('Sign In'),
+            ),
+            onPressed: () {
+              try {
+                _auth.signInWithEmailAndPassword(
+                    email: email, password: password);
+              } catch (e) {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text('로그인 실패'),
+                      content: Text('계정이 없거나 아이디/비밀번호를 잘못 입력하셨습니다.'),
+                      actions: <Widget>[
+                        FlatButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('확인'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              }
+            },
+          ),
           FlatButton(
             child: Text('계정 만들기'),
             onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>CreateAccountPage()));
             },
           ),
         ],
       ),
     );
   }
-
-  void signInWithEmail() {
-
-  }
-}
-
-class Auth implements BaseAuth {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  FirebaseUser _user;
-
-  @override
-  Future<FirebaseUser> getCurrentUser() async {
-    _user = await _firebaseAuth.currentUser();
-    return _user;
-  }
-
-  @override
-  bool isEmailVerified() {
-    return _user.isEmailVerified;
-  }
-
-  @override
-  Future<void> sendEmailVerification() async {
-    _user.sendEmailVerification();
-  }
-
-  @override
-  Future<String> signIn(String email, String password) async {
-    AuthResult result = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
-    _user = result.user;
-    return _user.uid;
-  }
-
-  @override
-  Future<void> signOut() {
-    return _firebaseAuth.signOut();
-  }
-
-  @override
-  Future<String> signUp(String email, String password) {
-    // TODO: implement signUp
-    return null;
-  }
-
 }

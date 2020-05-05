@@ -14,15 +14,25 @@ class _SplashAnimation1State extends State<SplashAnimation1>
   AnimationController controller;
   Animation animation;
   bool virginity = true;
+  bool isSingedIn = false;
 
   Future<void> getVirginity() async {
     final prefs = await SharedPreferences.getInstance();
-    print("getVirginity executed");
     if (prefs.getBool("isVirgin") == null) {
       virginity = true;
     } else {
       virginity = prefs.getBool("isVirgin");
     }
+  }
+
+  Future<void> getSignedInState() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("isSignedIn") == null) {
+      isSingedIn = false;
+    } else{
+      isSingedIn = true;
+    }
+
   }
 
   Future<void> _changeVirginity() async {
