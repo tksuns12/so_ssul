@@ -13,7 +13,12 @@ class SingInPage extends StatelessWidget {
             FlatButton(
               child: Text('이메일로 로그인'),
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => EmailSignIn()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EmailSignIn(),
+                  ),
+                );
               },
             )
           ],
@@ -22,7 +27,5 @@ class SingInPage extends StatelessWidget {
     );
   }
 
-  void signInWithEmail() {
-
-  }
+  void signInWithEmail() {}
 }
