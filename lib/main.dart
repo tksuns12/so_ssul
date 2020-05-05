@@ -66,12 +66,12 @@ class _HomeState extends State<Home> {
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(icon: Icon(Icons.home), title: Text('홈')),
             BottomNavigationBarItem(
-                icon: Icon(Icons.people), title: Text('내 프로젝트')),
+                icon: Icon(Icons.people), title: Text('전체 목록')),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.textsms), title: Text('내 글')),
+            BottomNavigationBarItem(icon: Icon(Icons.store), title: Text('문장 마켓')),
             BottomNavigationBarItem(
                 icon: Icon(Icons.person), title: Text('프로필')),
-            BottomNavigationBarItem(icon: Icon(Icons.store), title: Text('마켓')),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.settings), title: Text('설정')),
           ],
           currentIndex: _selectedPageIndex,
           onTap: (int index) {
