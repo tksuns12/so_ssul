@@ -12,5 +12,5 @@ abstract class BaseAuth {
 
   Future<void> signOut();
 
-  Future<bool> isEmailVerified();
+  bool isEmailVerified();
 }

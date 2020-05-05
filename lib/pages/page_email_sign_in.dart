@@ -58,31 +58,29 @@ class _EmailSignInState extends State<EmailSignIn> {
 
 class Auth implements BaseAuth {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  FirebaseUser _user;
 
   @override
   Future<FirebaseUser> getCurrentUser() async {
-    FirebaseUser user = await _firebaseAuth.currentUser();
-    return user;
+    _user = await _firebaseAuth.currentUser();
+    return _user;
   }
 
   @override
-  Future<bool> isEmailVerified() {
-    // TODO: implement isEmailVerified
-    return null;
+  bool isEmailVerified() {
+    return _user.isEmailVerified;
   }
 
   @override
   Future<void> sendEmailVerification() async {
-    FirebaseUser user = await _firebaseAuth.currentUser();
-    user.sendEmailVerification();
-    return null;
+    _user.sendEmailVerification();
   }
 
   @override
   Future<String> signIn(String email, String password) async {
     AuthResult result = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
-    FirebaseUser user = result.user;
-    return user.uid;
+    _user = result.user;
+    return _user.uid;
   }
 
   @override

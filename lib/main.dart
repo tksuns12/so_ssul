@@ -18,11 +18,27 @@ class MyApp extends StatelessWidget {
 }
 
 class Home extends StatefulWidget {
+
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
+  List<Widget> _bodyWidget;
+
+  @override
+  void initState() {
+    super.initState();
+    _bodyWidget = <Widget>[
+      HomeBody(changeMainState: setSelectedPage),
+      ListPage(),
+      Container(),
+      Container(),
+      Container(),
+    ];
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -67,20 +83,10 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-
   void setSelectedPage(int index) {
     setState(() {
       _selectedPageIndex = index;
     });
   }
+
 }
-
-
-
-List<Widget> _bodyWidget = <Widget>[
-  HomePage(),
-  ListPage(),
-  Container(),
-  Container(),
-  Container(),
-];
