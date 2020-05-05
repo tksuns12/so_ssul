@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sossul/page_home.dart';
-import 'package:sossul/page_list.dart';
-import 'splash_animation.dart';
+import 'package:sossul/pages/page_home.dart';
+import 'package:sossul/pages/page_list.dart';
+import 'pages/splash_animation.dart';
 
 void main() => runApp(MyApp());
 
-int _selectedIndex = 0;
+int _selectedPageIndex = 0;
 
 class MyApp extends StatelessWidget {
 
@@ -19,11 +18,27 @@ class MyApp extends StatelessWidget {
 }
 
 class Home extends StatefulWidget {
+
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
+  List<Widget> _bodyWidget;
+
+  @override
+  void initState() {
+    super.initState();
+    _bodyWidget = <Widget>[
+      HomeBody(changeMainState: setSelectedPage),
+      ListPage(),
+      Container(),
+      Container(),
+      Container(),
+    ];
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -42,7 +57,7 @@ class _HomeState extends State<Home> {
           title: Text('S.S'),
         ),
         body: Center(
-          child: _bodyWidget[_selectedIndex],
+          child: _bodyWidget[_selectedPageIndex],
         ),
         bottomNavigationBar: BottomNavigationBar(
           showUnselectedLabels: true,
@@ -58,22 +73,20 @@ class _HomeState extends State<Home> {
             BottomNavigationBarItem(
                 icon: Icon(Icons.settings), title: Text('설정')),
           ],
-          currentIndex: _selectedIndex,
+          currentIndex: _selectedPageIndex,
           onTap: (int index) {
             setState(() {
-              _selectedIndex = index;
+              setSelectedPage(index);
             });
           },
         ),
       ),
     );
   }
-}
+  void setSelectedPage(int index) {
+    setState(() {
+      _selectedPageIndex = index;
+    });
+  }
 
-List<Widget> _bodyWidget = <Widget>[
-  HomePage(),
-  ListPage(),
-  Container(),
-  Container(),
-  Container(),
-];
+}
