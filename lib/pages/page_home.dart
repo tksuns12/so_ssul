@@ -8,6 +8,7 @@ class HomePage extends StatelessWidget {
   }
 }
 
+
 class HomeBody extends StatefulWidget {
   @override
   _HomeBodyState createState() => _HomeBodyState();
@@ -38,7 +39,7 @@ class _HomeBodyState extends State<HomeBody> {
                 SliverGrid(
                     delegate: SliverChildBuilderDelegate(
                         (BuildContext context, int index) {
-                      return CircleAvatar(child: Text('$index'));
+                      return FlatButton(child: CircleAvatar(child: Text('$index')), onPressed:(){},);
                     }, childCount: 6),
                     gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                       maxCrossAxisExtent: 200,

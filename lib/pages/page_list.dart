@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sossul/page_work.dart';
+import 'package:sossul/pages/page_work.dart';
 
 class ListPage extends StatelessWidget {
   @override
