@@ -5,26 +5,30 @@ import 'package:flutter/material.dart';
 class Authorization {
   FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> createEmailAccount(
+  Future<String> createEmailAccount(
       {@required BuildContext context,
       @required String email,
       @required String password}) async {
     try {
       await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
+      return 'AccountCreateSucceed';
     } catch (e) {
       switch (e.code) {
         case 'ERROR_WEAK_PASSWORD':
           createErrorDialog(context,
               title: '계정 생성 실패', message: '비밀번호가 너무 단순합니다.');
+          return 'Weak Password';
           break;
         case 'ERROR_INVALID_EMAIL':
           createErrorDialog(context,
               title: '계정 생성 실패', message: '이메일 형식이 안 맞습니다.');
+          return 'Invalid Email';
           break;
         case 'ERROR_EMAIL_ALREADY_IN_USE':
           createErrorDialog(context,
               title: '계정 생성 실패', message: '이미 사용 중인 이메일입니다.');
+          return 'Email Already In Use';
           break;
       }
     }
