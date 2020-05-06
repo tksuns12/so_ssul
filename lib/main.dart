@@ -32,8 +32,8 @@ class _HomeState extends State<Home> {
       ),
       home: Scaffold(
         appBar: AppBar(
-          leading: Hero(tag: 'logo', child: Icon(Icons.book, color: Colors.white, size: 30,)),
-          title: Text('AppBar'),
+          //leading: Hero(tag: 'logo', child: Icon(Icons.book, color: Colors.white, size: 30,)),
+          title: Text('S.S'),
         ),
         body: Center(
           child: _bodyWidget[_selectedIndex],
