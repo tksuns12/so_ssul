@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../main.dart';
+import 'package:sossul/pages/page_sign_in.dart';
 
 class SplashAnimation1 extends StatefulWidget {
   @override
@@ -13,55 +11,22 @@ class _SplashAnimation1State extends State<SplashAnimation1>
     with SingleTickerProviderStateMixin {
   AnimationController controller;
   Animation animation;
-  bool virginity = true;
-  bool isSingedIn = false;
-
-  Future<void> getVirginity() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool("isVirgin") == null) {
-      virginity = true;
-    } else {
-      virginity = prefs.getBool("isVirgin");
-    }
-  }
-
-  Future<void> getSignedInState() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("isSignedIn") == null) {
-      isSingedIn = false;
-    } else{
-      isSingedIn = true;
-    }
-
-  }
-
-  Future<void> _changeVirginity() async {
-    final prefs = await SharedPreferences.getInstance();
-    print("changeVirginity executed");
-    prefs.setBool("isVirgin", false);
-  }
 
   @override
   void initState() {
-    getVirginity().then((result){});
-    _changeVirginity();
-      super.initState();
-      controller = AnimationController(
-        duration: Duration(seconds: 1),
-        vsync: this,
-      );
-      animation = ColorTween(begin: Colors.black45, end: Colors.purpleAccent)
-          .animate(controller);
-      if (virginity)
-      {controller.forward();}
-      controller.addListener(() {
-        setState(() {});
-        if (controller.isCompleted && virginity) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => SplashAnimation2()));
-        }
-      });
-
+    super.initState();
+    controller = AnimationController(
+      duration: Duration(seconds: 1),
+      vsync: this,
+    );
+    animation = ColorTween(begin: Colors.black45, end: Colors.purpleAccent)
+        .animate(controller);
+    controller.forward();
+    controller.addListener(() {
+      setState(() {});
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => SplashAnimation2()));
+    });
   }
 
   @override
@@ -72,8 +37,7 @@ class _SplashAnimation1State extends State<SplashAnimation1>
 
   @override
   Widget build(BuildContext context) {
-    if (virginity)
-    {return Container(
+    return Container(
       color: animation.value,
       child: Center(
         child: Hero(
@@ -85,9 +49,7 @@ class _SplashAnimation1State extends State<SplashAnimation1>
           tag: 'logo',
         ),
       ),
-    );} else {
-      return Home();
-    }
+    );
   }
 }
 
@@ -97,6 +59,7 @@ class SplashAnimation2 extends StatefulWidget {
 }
 
 class _SplashAnimation2State extends State<SplashAnimation2> {
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -128,7 +91,7 @@ class _SplashAnimation2State extends State<SplashAnimation2> {
                   speed: Duration(milliseconds: 300),
                   totalRepeatCount: 1,
                   onFinished: () {
-                    Navigator.pushReplacement(context, CustomPageRoute(Home()));
+                    Navigator.pushReplacement(context, CustomPageRoute(SignInPage(),),);
                   },
                 ),
               ),

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sossul/pages/page_home.dart';
+import 'package:sossul/pages/page_launch.dart';
 import 'package:sossul/pages/page_list.dart';
-import 'package:sossul/pages/page_profile.dart';
-import 'pages/splash_animation.dart';
 
 void main() => runApp(MyApp());
 
@@ -13,18 +12,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
       return MaterialApp(
-        home: SplashAnimation1(),
+        home: LaunchPage(),
       );
     }
 }
 
-class Home extends StatefulWidget {
+class Main extends StatefulWidget {
 
   @override
-  _HomeState createState() => _HomeState();
+  _MainState createState() => _MainState();
 }
 
-class _HomeState extends State<Home> {
+class _MainState extends State<Main> {
   List<Widget> _bodyWidget;
 
   @override
