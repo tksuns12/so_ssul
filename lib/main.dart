@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sossul/pages/page_home.dart';
 import 'package:sossul/pages/page_list.dart';
+import 'package:sossul/pages/page_profile.dart';
 import 'pages/splash_animation.dart';
 
 void main() => runApp(MyApp());
@@ -43,7 +44,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData.dark().copyWith(
-        appBarTheme: AppBarTheme(color: Colors.purple),
+        appBarTheme: AppBarTheme(color: Colors.greenAccent),
       ),
       home: Scaffold(
         appBar: AppBar(
@@ -61,8 +62,8 @@ class _HomeState extends State<Home> {
         ),
         bottomNavigationBar: BottomNavigationBar(
           showUnselectedLabels: true,
-          unselectedItemColor: Colors.black,
-          selectedItemColor: Colors.blue,
+          unselectedItemColor: Colors.white,
+          selectedItemColor: Colors.greenAccent,
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(icon: Icon(Icons.home), title: Text('홈')),
             BottomNavigationBarItem(
