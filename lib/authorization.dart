@@ -30,22 +30,26 @@ class Authorization {
     }
   }
 
-  Future<void> signInEmail(
+  Future<String> signInEmail(
       {@required BuildContext context,
       @required String email,
       @required String password}) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
+      return 'SignInSucceed';
     } catch (e) {
       switch (e.code) {
         case 'ERROR_INVALID_EMAIL':
           await createErrorDialog(context, message: '이메일 형식이 안 맞습니다.', title: '로그인 실패');
+          return 'Invalid Email';
           break;
         case 'ERROR_WRONG_PASSWORD':
           await createErrorDialog(context, message: '이메일이나 비밀번호가 틀렸습니다.', title: '로그인 실패');
+          return 'Wrong Password';
           break;
         case 'ERROR_USER_NOT_FOUND':
           await createErrorDialog(context, message: '계정이 없습니다.', title: '로그인 실패');
+          return 'No Account';
           break;
       }
     }
