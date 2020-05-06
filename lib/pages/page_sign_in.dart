@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sossul/pages/page_email_sign_in.dart';
 
-class SingInPage extends StatelessWidget {
+class SignInPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
