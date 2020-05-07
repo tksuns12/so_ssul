@@ -1,7 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sossul/local_data_keys.dart';
+
+import 'main.dart';
 
 class Authorization {
   FirebaseAuth _auth = FirebaseAuth.instance;
@@ -10,61 +15,66 @@ class Authorization {
   Future<FirebaseUser> signInGoogle() async {
     GoogleSignInAccount account = await googleSignIn.signIn();
     GoogleSignInAuthentication authentication = await account.authentication;
-    AuthCredential credential = GoogleAuthProvider.getCredential( idToken: authentication.idToken, accessToken: authentication.accessToken);
+    AuthCredential credential = GoogleAuthProvider.getCredential(
+        idToken: authentication.idToken,
+        accessToken: authentication.accessToken);
     AuthResult authResult = await _auth.signInWithCredential(credential);
     FirebaseUser user = authResult.user;
     return user;
   }
 
-  Future<String> createEmailAccount(
+  Future createEmailAccount(
       {@required BuildContext context,
       @required String email,
       @required String password}) async {
     try {
       await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
-      return 'AccountCreateSucceed';
     } catch (e) {
       switch (e.code) {
         case 'ERROR_WEAK_PASSWORD':
           createErrorDialog(context,
               title: '계정 생성 실패', message: '비밀번호가 너무 단순합니다.');
-          return 'Weak Password';
           break;
         case 'ERROR_INVALID_EMAIL':
           createErrorDialog(context,
               title: '계정 생성 실패', message: '이메일 형식이 안 맞습니다.');
-          return 'Invalid Email';
           break;
         case 'ERROR_EMAIL_ALREADY_IN_USE':
           createErrorDialog(context,
               title: '계정 생성 실패', message: '이미 사용 중인 이메일입니다.');
-          return 'Email Already In Use';
           break;
       }
     }
+    signInEmail(context: context, email: email, password: password);
   }
 
-  Future<String> signInEmail(
+  Future signInEmail(
       {@required BuildContext context,
       @required String email,
       @required String password}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final storage = FlutterSecureStorage();
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
-      return 'SignInSucceed';
+      await storage.write(value: email, key: kStoredEmail);
+      await storage.write(key: kStoredEmailPassword, value: password);
+      prefs.setString(kSignInType, 'Email');
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => Main()), (route) => false);
     } catch (e) {
       switch (e.code) {
         case 'ERROR_INVALID_EMAIL':
-          await createErrorDialog(context, message: '이메일 형식이 안 맞습니다.', title: '로그인 실패');
-          return 'Invalid Email';
+          await createErrorDialog(context,
+              message: '이메일 형식이 안 맞습니다.', title: '로그인 실패');
           break;
         case 'ERROR_WRONG_PASSWORD':
-          await createErrorDialog(context, message: '이메일이나 비밀번호가 틀렸습니다.', title: '로그인 실패');
-          return 'Wrong Password';
+          await createErrorDialog(context,
+              message: '이메일이나 비밀번호가 틀렸습니다.', title: '로그인 실패');
           break;
         case 'ERROR_USER_NOT_FOUND':
-          await createErrorDialog(context, message: '계정이 없습니다.', title: '로그인 실패');
-          return 'No Account';
+          await createErrorDialog(context,
+              message: '계정이 없습니다.', title: '로그인 실패');
           break;
       }
     }

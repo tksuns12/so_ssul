@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sossul/authorization.dart';
-import 'package:sossul/local_data_keys.dart';
 import 'package:sossul/pages/page_create_account.dart';
-
-import '../main.dart';
 
 class EmailSignIn extends StatefulWidget {
   @override
@@ -43,7 +39,10 @@ class _EmailSignInState extends State<EmailSignIn> {
                           },
                         ),
                       ),
-                      Text('이메일 형식에 안 맞습니다.', style: TextStyle(fontSize: 10),),
+                      Text(
+                        '이메일 형식에 안 맞습니다.',
+                        style: TextStyle(fontSize: 10),
+                      ),
                     ],
                   )
                 ],
@@ -65,7 +64,10 @@ class _EmailSignInState extends State<EmailSignIn> {
                         },
                       ),
                     ),
-                    Text('비밀번호는 숫자, 영문, 특수기호 포함 6~12자', style: TextStyle(fontSize: 10),),
+                    Text(
+                      '비밀번호는 숫자, 영문, 특수기호 포함 6~12자',
+                      style: TextStyle(fontSize: 10),
+                    ),
                   ],
                 )
               ],
@@ -77,12 +79,8 @@ class _EmailSignInState extends State<EmailSignIn> {
                   child: Text('Sign In'),
                 ),
                 onPressed: () async {
-                  var message = await _authorization.signInEmail(context: context, email: email, password: password);
-                  if (message == 'SignInSucceed'){
-                  prefs = await SharedPreferences.getInstance();
-                  prefs.setString(kStoredEmail, email);
-                  prefs.setString(kStoredEmailPassword, password);
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>Main(),),);}
+                  await _authorization.signInEmail(
+                      context: context, email: email, password: password);
                 },
               ),
             ),
@@ -91,7 +89,12 @@ class _EmailSignInState extends State<EmailSignIn> {
               child: FlatButton(
                 child: Text('계정 생성'),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>CreateAccountPage(),),);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CreateAccountPage(),
+                    ),
+                  );
                 },
               ),
             ),

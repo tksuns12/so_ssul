@@ -75,18 +75,8 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 child: Text('계정 만들기'),
               ),
               onPressed: () async {
-                var message1 = await _authorization.createEmailAccount(
+                await _authorization.createEmailAccount(
                     context: context, email: email.trim(), password: password);
-                if (message1 == 'AccountCreateSucceed') {
-                  var message2 = await _authorization.signInEmail(
-                      context: context,
-                      email: email.trim(),
-                      password: password);
-                  if (message2 == 'SignInSucceed') {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => Main()));
-                  }
-                }
               },
             ),
           ),

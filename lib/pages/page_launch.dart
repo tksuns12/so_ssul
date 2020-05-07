@@ -1,14 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sossul/authorization.dart';
 import 'package:sossul/local_data_keys.dart';
 import 'package:sossul/pages/page_sign_in.dart';
 import 'package:sossul/pages/splash_animation.dart';
-
-import '../main.dart';
 
 class LaunchPage extends StatefulWidget {
   @override
@@ -17,11 +15,10 @@ class LaunchPage extends StatefulWidget {
 
 class _LaunchPageState extends State<LaunchPage> {
   Authorization _authorization = Authorization();
-  String email;
-  String password;
 
   Future startTime() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    FlutterSecureStorage storage =  FlutterSecureStorage();
     bool virginity = (prefs.getBool(kIsVirgin) ?? true);
     String signInType = prefs.getString(kSignInType);
     if (virginity) {
@@ -32,20 +29,19 @@ class _LaunchPageState extends State<LaunchPage> {
           ),
         );
     } else {
-      if (signInType != null) {
+      if (signInType == null) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => SignInPage(),
+          ),
+        );
+      } else if (signInType == 'Email') {
+          String email;
+          String password;
+          email = await storage.read(key: kStoredEmail);
+          password = await storage.read(key: kStoredEmailPassword);
           await _authorization.signInEmail(
               context: context, email: email, password: password);
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => Main(),
-            ),
-          );
-      } else {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => SignInPage(),
-            ),
-          );
       }
     }
   }

@@ -26,6 +26,4 @@ class SignInPage extends StatelessWidget {
       ),
     );
   }
-
-  void signInWithEmail() {}
 }

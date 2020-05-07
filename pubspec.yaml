@@ -30,6 +30,7 @@ dependencies:
   flutter_native_splash: ^0.1.9
   cloud_firestore: ^0.13.5
   google_sign_in: ^4.4.4
+  flutter_secure_storage: ^3.3.3
 
 dev_dependencies:
   flutter_test:
