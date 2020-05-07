@@ -5,22 +5,22 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sossul/local_data_keys.dart';
-
-import 'main.dart';
-
 class Authorization {
   FirebaseAuth _auth = FirebaseAuth.instance;
-  GoogleSignIn googleSignIn = GoogleSignIn();
+  GoogleSignIn _googleSignIn = GoogleSignIn(scopes: <String>[
+    'email',
+    'https://www.googleapis.com/auth/contacts.readonly',
+  ]);
+  SharedPreferences prefs;
 
-  Future<FirebaseUser> signInGoogle() async {
-    GoogleSignInAccount account = await googleSignIn.signIn();
-    GoogleSignInAuthentication authentication = await account.authentication;
-    AuthCredential credential = GoogleAuthProvider.getCredential(
-        idToken: authentication.idToken,
-        accessToken: authentication.accessToken);
-    AuthResult authResult = await _auth.signInWithCredential(credential);
-    FirebaseUser user = authResult.user;
-    return user;
+
+  Future signInGoogle({@required BuildContext context}) async {
+    prefs = await SharedPreferences.getInstance();
+    prefs.setString(kSignInType, 'Google');
+    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final AuthCredential credential = GoogleAuthProvider.getCredential(accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+    final FirebaseUser user = (await _auth.signInWithCredential(credential)).user;
   }
 
   Future createEmailAccount(
@@ -53,15 +53,13 @@ class Authorization {
       {@required BuildContext context,
       @required String email,
       @required String password}) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     final storage = FlutterSecureStorage();
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       await storage.write(value: email, key: kStoredEmail);
       await storage.write(key: kStoredEmailPassword, value: password);
       prefs.setString(kSignInType, 'Email');
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => Main()), (route) => false);
     } catch (e) {
       switch (e.code) {
         case 'ERROR_INVALID_EMAIL':

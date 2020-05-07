@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sossul/authorization.dart';
 import 'package:sossul/pages/page_create_account.dart';
 
+import '../main.dart';
+
 class EmailSignIn extends StatefulWidget {
   @override
   _EmailSignInState createState() => _EmailSignInState();
@@ -80,7 +82,10 @@ class _EmailSignInState extends State<EmailSignIn> {
                 ),
                 onPressed: () async {
                   await _authorization.signInEmail(
-                      context: context, email: email, password: password);
+                      context: context, email: email, password: password).whenComplete(() => (){
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) => Main()), (route) => false);
+                  });
                 },
               ),
             ),
