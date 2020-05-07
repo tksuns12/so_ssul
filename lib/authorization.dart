@@ -1,9 +1,20 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class Authorization {
   FirebaseAuth _auth = FirebaseAuth.instance;
+  GoogleSignIn googleSignIn = GoogleSignIn();
+
+  Future<FirebaseUser> signInGoogle() async {
+    GoogleSignInAccount account = await googleSignIn.signIn();
+    GoogleSignInAuthentication authentication = await account.authentication;
+    AuthCredential credential = GoogleAuthProvider.getCredential( idToken: authentication.idToken, accessToken: authentication.accessToken);
+    AuthResult authResult = await _auth.signInWithCredential(credential);
+    FirebaseUser user = authResult.user;
+    return user;
+  }
 
   Future<void> createEmailAccount(
       {@required BuildContext context,

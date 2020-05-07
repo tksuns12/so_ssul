@@ -16,8 +16,6 @@ class LaunchPage extends StatefulWidget {
 }
 
 class _LaunchPageState extends State<LaunchPage> {
-//  bool virginity = true;
-//  bool isSignedIn = false;
   Authorization _authorization = Authorization();
   String email;
   String password;
@@ -54,68 +52,12 @@ class _LaunchPageState extends State<LaunchPage> {
 
   @override
   void initState() {
-    Timer(Duration(milliseconds: 200), (){startTime();});
+    startTime();
     super.initState();
-//    getVirginity();
-//    _changeVirginity();
-//    SchedulerBinding.instance.addPostFrameCallback((_){
-//      if (virginity) {
-//        Navigator.pushReplacement(
-//          context,
-//          MaterialPageRoute(
-//            builder: (context) => SplashAnimation1(),
-//          ),
-//        );
-//      } else {
-//        getSignedInState().then((value) {});
-//        if (isSignedIn) {
-//          _authorization.signInEmail(
-//              context: context, email: email, password: password);
-//          Navigator.pushReplacement(
-//            context,
-//            MaterialPageRoute(
-//              builder: (context) => Main(),
-//            ),
-//          );
-//        } else {
-//          Navigator.pushReplacement(
-//            context,
-//            MaterialPageRoute(
-//              builder: (context) => SignInPage(),
-//            ),
-//          );
-//        }
-//      }
-//    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(color: Colors.lightBlueAccent);
   }
-//
-//  Future<void> getVirginity() async {
-//    final prefs = await SharedPreferences.getInstance();
-//    if (prefs.getBool(kIsVirgin) == null) {
-//      virginity = true;
-//    } else {
-//      virginity = prefs.getBool(kIsVirgin);
-//    }
-//  }
-//
-//  Future<void> getSignedInState() async {
-//    final prefs = await SharedPreferences.getInstance();
-//    if (prefs.getString(kSignInType) == null) {
-//      isSignedIn = false;
-//    } else {
-//      isSignedIn = true;
-//      email = prefs.getString(kStoredEmail);
-//      password = prefs.getString(kStoredEmailPassword);
-//    }
-//  }
-//
-//  Future<void> _changeVirginity() async {
-//    final prefs = await SharedPreferences.getInstance();
-//    prefs.setBool(kIsVirgin, false);
-//  }
 }
