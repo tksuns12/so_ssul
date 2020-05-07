@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../authorization.dart';
@@ -37,7 +36,10 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       },
                     ),
                   ),
-                  Text('이메일 형식에 안 맞습니다.', style: TextStyle(fontSize: 10),),
+                  Text(
+                    '이메일 형식에 안 맞습니다.',
+                    style: TextStyle(fontSize: 10),
+                  ),
                 ],
               )
             ],
@@ -58,21 +60,33 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       },
                     ),
                   ),
-                  Text('비밀번호는 숫자, 영문, 특수기호 포함 6~12자', style: TextStyle(fontSize: 10),),
+                  Text(
+                    '비밀번호는 숫자, 영문, 특수기호 포함 6~12자',
+                    style: TextStyle(fontSize: 10),
+                  ),
                 ],
               )
             ],
           ),
           Padding(
-            padding: const EdgeInsets.only(top:20),
+            padding: const EdgeInsets.only(top: 20),
             child: FlatButton(
               child: Container(
                 child: Text('계정 만들기'),
               ),
               onPressed: () async {
-                await _authorization.createEmailAccount(context: context, email: email, password: password);
-                await _authorization.signInEmail(context: context, email: email, password: password);
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Main()));
+                var message1 = await _authorization.createEmailAccount(
+                    context: context, email: email.trim(), password: password);
+                if (message1 == 'AccountCreateSucceed') {
+                  var message2 = await _authorization.signInEmail(
+                      context: context,
+                      email: email.trim(),
+                      password: password);
+                  if (message2 == 'SignInSucceed') {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => Main()));
+                  }
+                }
               },
             ),
           ),

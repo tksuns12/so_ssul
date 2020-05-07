@@ -77,11 +77,12 @@ class _EmailSignInState extends State<EmailSignIn> {
                   child: Text('Sign In'),
                 ),
                 onPressed: () async {
-                  await _authorization.signInEmail(context: context, email: email, password: password);
+                  var message = await _authorization.signInEmail(context: context, email: email, password: password);
+                  if (message == 'SignInSucceed'){
                   prefs = await SharedPreferences.getInstance();
                   prefs.setString(kStoredEmail, email);
                   prefs.setString(kStoredEmailPassword, password);
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>Main()));
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>Main(),),);}
                 },
               ),
             ),
@@ -90,7 +91,7 @@ class _EmailSignInState extends State<EmailSignIn> {
               child: FlatButton(
                 child: Text('계정 생성'),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>CreateAccountPage()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>CreateAccountPage(),),);
                 },
               ),
             ),
