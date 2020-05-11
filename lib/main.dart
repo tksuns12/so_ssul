@@ -26,17 +26,31 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
-  List<Widget> _bodyWidget;
+  List<Widget> _bodyWidgets;
+  List<AppBar> _appBars;
 
   @override
   void initState() {
     super.initState();
-    _bodyWidget = <Widget>[
+    _bodyWidgets = <Widget>[
       HomeBody(changeMainState: setSelectedPage),
       ListPage(),
       Container(),
       Container(),
       Container(),
+    ];
+
+    _appBars = <AppBar>[
+      AppBar(
+          title: Text('[So.SSul]]'),),
+      null,
+      AppBar(
+        title: Text('[So.SSul]]'),),
+      AppBar(
+        title: Text('[So.SSul]]'),),
+      AppBar(
+        title: Text('[So.SSul]]'),),
+
     ];
 
   }
@@ -48,18 +62,10 @@ class _MainState extends State<Main> {
         appBarTheme: AppBarTheme(color: Colors.greenAccent),
       ),
       home: Scaffold(
-        appBar: AppBar(
-          leading: Hero(
-              tag: 'logo',
-              child: Icon(
-                Icons.book,
-                color: Colors.white,
-                size: 30,
-              )),
-          title: Text('S.S'),
-        ),
+        appBar: _appBars[_selectedPageIndex],
+
         body: Center(
-          child: _bodyWidget[_selectedPageIndex],
+          child: _bodyWidgets[_selectedPageIndex],
         ),
         bottomNavigationBar: BottomNavigationBar(
           showUnselectedLabels: true,

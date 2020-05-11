@@ -74,7 +74,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
               await _dbManager.loadUserInfo(currentUser: _currentUser);
           print(userInfo);
           if (userInfo == null) {
-            setNickNameDialog(
+            showNickNameDialog(
                 context: context,
                 currentUser: _currentUser,
                 dbManager: _dbManager);
@@ -97,7 +97,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
   }
 }
 
-Future setNickNameDialog(
+Future showNickNameDialog(
     {@required BuildContext context,
     @required FirebaseUser currentUser,
     @required DBManager dbManager}) {

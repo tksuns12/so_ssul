@@ -5,12 +5,30 @@ class ListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return ListView.builder(
-      itemCount: constructItemsList().length,
-      padding: EdgeInsets.only(right: 20.0, left: 20.0),
-      itemBuilder: (BuildContext context, int index) {
-        return ListItem();
-      },
+    return CustomScrollView(
+      slivers: <Widget>[
+        SliverAppBar(
+          floating: true,
+          snap: true,
+          expandedHeight: 200,
+          flexibleSpace: FlexibleSpaceBar(
+            background: Column(children: <Widget>[
+              Expanded(
+                child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[
+                  SizedBox(height: 30, width: 300,child: TextField(
+                    keyboardType: TextInputType.text,
+                  )),
+                  IconButton(icon: Icon(Icons.search), onPressed: (){}),
+                ],),
+              ),
+            ],),
+          ),
+          actions: <Widget>[
+            IconButton(icon: Icon(Icons.search), onPressed: (){})
+          ],
+        ),
+    SliverList(delegate: SliverChildListDelegate(constructItemsList()))
+      ],
     );
   }
 }
