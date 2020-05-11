@@ -62,6 +62,7 @@ class _MainState extends State<Main> {
         appBarTheme: AppBarTheme(color: Colors.greenAccent),
       ),
       home: Scaffold(
+        floatingActionButton: _selectedPageIndex==1?FloatingActionButton(onPressed: () {}, child: Icon(Icons.add),):null,
         appBar: _appBars[_selectedPageIndex],
 
         body: Center(
