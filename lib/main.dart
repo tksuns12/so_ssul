@@ -18,6 +18,8 @@ class MyApp extends StatelessWidget {
 }
 
 class Main extends StatefulWidget {
+  final currentUser;
+  const Main({Key key, this.currentUser}) : super(key: key);
 
   @override
   _MainState createState() => _MainState();

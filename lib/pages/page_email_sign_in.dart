@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sossul/authorization.dart';
+import 'package:sossul/authentication.dart';
 import 'package:sossul/pages/page_create_account.dart';
 
 import '../main.dart';
@@ -11,10 +11,9 @@ class EmailSignIn extends StatefulWidget {
 }
 
 class _EmailSignInState extends State<EmailSignIn> {
-  Authorization _authorization = Authorization();
+  Authentication _authorization = Authentication();
   String email;
   String password;
-  SharedPreferences prefs;
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +81,7 @@ class _EmailSignInState extends State<EmailSignIn> {
                 ),
                 onPressed: () async {
                   await _authorization.signInEmail(
-                      context: context, email: email, password: password).whenComplete(() => (){
+                      context: context, email: email, password: password).then((value) => (){
                     Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(builder: (context) => Main()), (route) => false);
                   });

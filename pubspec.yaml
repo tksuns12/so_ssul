@@ -27,8 +27,8 @@ dependencies:
   animated_text_kit: ^2.0.1
   flutter_native_splash: ^0.1.9
   google_sign_in: ^4.4.4
-  flutter_secure_storage: ^3.3.3
   http: ^0.12.1
+  cloud_firestore: ^0.13.5
 
 dev_dependencies:
   flutter_test:
