@@ -13,13 +13,13 @@ class Authentication {
   ]);
 
   Future signInGoogle({@required BuildContext context}) async {
-    try {
-      final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-      final GoogleSignInAuthentication googleAuth =
+        try {
+          final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+          final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
-      final AuthCredential credential = GoogleAuthProvider.getCredential(
-          accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
-      await auth.signInWithCredential(credential);
+          final AuthCredential credential = GoogleAuthProvider.getCredential(
+              accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+          await auth.signInWithCredential(credential);
 
     } catch (e) {
       switch (e.code) {
@@ -133,7 +133,7 @@ Future setNickNameDialog({@required BuildContext context, @required FirebaseUser
                       .loadUserInfo(
                       currentUser: currentUser)
                       .then((value) =>
-                  value.data["nickname"]) ==
+                  value["nickname"]) ==
                       null) {
                     return "이미 있는 별명입니다.";
                   } else if (!nickNameRegex.hasMatch(value)) {

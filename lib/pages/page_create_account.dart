@@ -117,12 +117,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                               validator: (value) {
                                 Pattern nickNamePattern = r'^[ㄱ-ㅎ|ㅏ-ㅣ|가-힣0-9]{2,6}$';
                                 RegExp nickNameRegex = RegExp(nickNamePattern);
-                                if (dbManager
-                                        .loadUserInfo(
-                                            currentUser: _currentUser)
-                                        .then((value) =>
-                                            value.data["nickname"]) ==
-                                    null) {
+                                if (dbManager.nickNameAlreadyUsed(nickName: _nickName)) {
                                   return "이미 있는 별명입니다.";
                                 } else if (!nickNameRegex.hasMatch(value)) {
                                   return "별명은 숫자 포함 한글 2~6자 사이입니다.";

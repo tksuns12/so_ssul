@@ -11,15 +11,17 @@ class DBManager {
     _firestore.collection('users').document('${currentUser.uid}').setData({'nickname': '$nickName'}).catchError((e) => e);
   }
 
-  Future<DocumentSnapshot> loadUserInfo(
+  Future<Map> loadUserInfo(
       {@required FirebaseUser currentUser}) async {
+    Map data;
     await _firestore
         .collection("users")
-        .document("${currentUser.uid}")
+        .document('${currentUser.uid}')
         .get()
         .then((DocumentSnapshot ds) {
-      return ds.data;
-    }).catchError((e) => e);
+          data = ds.data;
+    });
+    return data;
   }
 
   bool nickNameAlreadyUsed({@required String nickName}) {

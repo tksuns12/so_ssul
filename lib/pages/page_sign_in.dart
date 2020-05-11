@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sossul/authentication.dart';
@@ -69,20 +70,18 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
         });
         await _authorization.signInGoogle(context: context);
         FirebaseUser _currentUser = await _authorization.auth.currentUser();
-        if (_currentUser != null) {
-          var userInfo =
+        if (_currentUser.uid != null) {
+          Map userInfo =
               await _dbManager.loadUserInfo(currentUser: _currentUser);
           print(userInfo);
-          if (userInfo == null) {
+          if (userInfo['nickname'] == null) {
             showNickNameDialog(
                 context: context,
                 currentUser: _currentUser,
                 dbManager: _dbManager);
+          } else {
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => Main()), (route) => false);
           }
-        } else {
-          Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => Main()),
-              (route) => false);
         }
       },
       onTapCancel: () {
@@ -125,7 +124,7 @@ Future showNickNameDialog(
                   RegExp nickNameRegex = RegExp(nickNamePattern);
                   if (dbManager
                           .loadUserInfo(currentUser: currentUser)
-                          .then((value) => value.data["nickname"]) ==
+                          .then((value) => value["nickname"]) ==
                       null) {
                     return "이미 있는 별명입니다.";
                   } else if (!nickNameRegex.hasMatch(value)) {
