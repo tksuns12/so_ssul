@@ -117,9 +117,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                               validator: (value) {
                                 Pattern nickNamePattern = r'^[ㄱ-ㅎ|ㅏ-ㅣ|가-힣0-9]{2,6}$';
                                 RegExp nickNameRegex = RegExp(nickNamePattern);
-                                if (dbManager.nickNameAlreadyUsed(nickName: _nickName)) {
-                                  return "이미 있는 별명입니다.";
-                                } else if (!nickNameRegex.hasMatch(value)) {
+                                 if (!nickNameRegex.hasMatch(value)) {
                                   return "별명은 숫자 포함 한글 2~6자 사이입니다.";
                                 } else {
                                   return null;
@@ -131,11 +129,18 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       ),
                       actions: <Widget>[
                         FlatButton(
-                            onPressed: () {
-                              if (_formKey.currentState.validate()) {
-                                dbManager.setUserNickName(currentUser: _currentUser, nickName: _nickName);
-                                _authorization.signInEmail(context: context, email: email, password: password);
-                                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>Main()), (route) => false);
+                            onPressed: () async {
+                              bool isAlreadyUsed = await dbManager.nickNameAlreadyUsed(nickName: _nickName);
+                              if (isAlreadyUsed) {
+                                showDialog(context: context,
+                                  child: AlertDialog(title: Text("별명 중복"), content: Text('이미 있는 별명입니다.'),actions: <Widget>[FlatButton(onPressed: (){Navigator.of(context).pop();}, child: Text('확인'),),],),);
+                              }
+                              else if (_formKey.currentState.validate()) {
+                                dbManager.setUserNickName(
+                                    currentUser: _currentUser, nickName: _nickName);
+                                Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(builder: (context) => Main()),
+                                        (route) => false);
                               }
                             },
                             child: Text('확인'))

@@ -7,33 +7,32 @@ enum HeartType { Novel, Sentence, Comment }
 class DBManager {
   Firestore _firestore = Firestore.instance;
 
-  void setUserNickName({@required currentUser, @required nickName}) {
-    _firestore.collection('users').document('${currentUser.uid}').setData({'nickname': '$nickName'}).catchError((e) => e);
+  Future<void> setUserNickName(
+      {@required currentUser, @required nickName}) async {
+    await _firestore
+        .collection('users').document('${currentUser.uid}').setData({'nickname':nickName});
   }
 
-  Future<Map> loadUserInfo(
-      {@required FirebaseUser currentUser}) async {
+  Future<Map> loadUserInfo({@required FirebaseUser currentUser}) async {
     Map data;
     await _firestore
         .collection("users")
         .document('${currentUser.uid}')
         .get()
         .then((DocumentSnapshot ds) {
-          data = ds.data;
+      data = ds.data;
     });
     return data;
   }
 
-  bool nickNameAlreadyUsed({@required String nickName}) {
-    var data;
-     _firestore
-            .collection("users")
-            .where("nickname", isEqualTo: nickName)
-            .snapshots()
-            .listen((event) {
-              data = event.documents;
-        });
-        return data != null;
+  Future<bool> nickNameAlreadyUsed({@required String nickName}) async {
+    var data = await _firestore
+        .collection("users")
+        .where("nickname", isEqualTo: nickName)
+        .snapshots().first;
+    print(data.documents.length);
+    bool isAlreadyUsed = data.documents.length != 0;
+    return isAlreadyUsed;
   }
 
   void openRoom(
