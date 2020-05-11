@@ -25,14 +25,15 @@ class DBManager {
   }
 
   bool nickNameAlreadyUsed({@required String nickName}) {
-    return _firestore
+    var data;
+     _firestore
             .collection("users")
             .where("nickname", isEqualTo: nickName)
             .snapshots()
             .listen((event) {
-          return event.documents;
-        }) !=
-        null;
+              data = event.documents;
+        });
+        return data != null;
   }
 
   void openRoom(

@@ -85,24 +85,25 @@ class _EmailSignInState extends State<EmailSignIn> {
                 onPressed: () async {
                   await _authorization
                       .signInEmail(
-                          context: context, email: email, password: password)
-                      .then((value) => () async {
-                            var _currentUser =
-                                await _authorization.auth.currentUser();
-                            var userInfo = await _dbManager.loadUserInfo(
-                                currentUser: _currentUser);
-                            if (userInfo["nickname"] == null) {
-                              showNickNameDialog(
-                                  context: context,
-                                  currentUser: _currentUser,
-                                  dbManager: _dbManager);
-                            } else {
-                              Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                      builder: (context) => Main()),
-                                  (route) => false);
-                            }
-                          });
+                          context: context, email: email, password: password);
+
+                  var _currentUser = await _authorization.auth.currentUser();
+
+                  if (_currentUser != null) {
+                    var userInfo = await _dbManager.loadUserInfo(
+                        currentUser: _currentUser);
+                    if (userInfo["nickname"] == null) {
+                      showNickNameDialog(
+                          context: context,
+                          currentUser: _currentUser,
+                          dbManager: _dbManager);
+                    } else {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => Main()),
+                              (route) => false);
+                    }
+                  }
                 },
               ),
             ),
