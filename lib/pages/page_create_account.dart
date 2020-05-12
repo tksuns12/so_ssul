@@ -38,10 +38,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       },
                     ),
                   ),
-                  Text(
-                    '이메일 형식에 안 맞습니다.',
-                    style: TextStyle(fontSize: 10),
-                  ),
                 ],
               )
             ],
@@ -61,10 +57,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                         password = text;
                       },
                     ),
-                  ),
-                  Text(
-                    '비밀번호는 숫자, 영문, 특수기호 포함 6~12자',
-                    style: TextStyle(fontSize: 10),
                   ),
                 ],
               )
