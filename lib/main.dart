@@ -33,8 +33,8 @@ class _MainState extends State<Main> {
   void initState() {
     super.initState();
     _bodyWidgets = <Widget>[
-      HomeBody(changeMainState: setSelectedPage),
-      ListPage(),
+      HomeBody(changeMainState: setSelectedPage, currentUser: widget.currentUser,),
+      ListPage(currentUser: widget.currentUser,),
       Container(),
       Container(),
       Container(),

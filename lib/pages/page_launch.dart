@@ -41,7 +41,7 @@ class _LaunchPageState extends State<LaunchPage> {
         _dbManager = DBManager();
         await _dbManager.onExecuteApp(currentUser: _currentUser);
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => Main()), (route) => false);
+            MaterialPageRoute(builder: (context) => Main(currentUser: _currentUser,)), (route) => false);
       }
     }
   }

@@ -28,7 +28,7 @@ class Authentication {
             if (userInfo == null) {
               _dbManager.createUserInfo(currentUser: currentUser, context: context);
             } else {
-              Navigator.of(context).pushAndRemoveUntil(mainRoute, (route) => false);
+              Navigator.of(context).pushAndRemoveUntil(mainRoute(currentUser), (route) => false);
             }
           }
 
@@ -83,7 +83,7 @@ class Authentication {
         if (userInfo == null) {
           _dbManager.createUserInfo(currentUser: currentUser, context: context);
         } else {
-          Navigator.of(context).pushAndRemoveUntil(mainRoute, (route) => false);
+          Navigator.of(context).pushAndRemoveUntil(mainRoute(currentUser), (route) => false);
         }
       }
 

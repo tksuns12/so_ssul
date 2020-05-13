@@ -7,13 +7,18 @@ import 'package:flutter/material.dart';
 import 'package:sossul/pages/routes.dart';
 
 enum HeartType { Novel, Sentence, Comment }
+enum SortingOption { Date, Participatable, Likes }
+const SortingOptions = ['time', 'isfull', 'likes'];
 
 class DBManager {
   Firestore _firestore = Firestore.instance;
   FirebaseStorage _storage = FirebaseStorage.instance;
 
   Future<void> onExecuteApp({@required FirebaseUser currentUser}) async {
-    await _firestore.collection('users').document('${currentUser.uid}').updateData({'lastvisit': FieldValue.serverTimestamp()});
+    await _firestore
+        .collection('users')
+        .document('${currentUser.uid}')
+        .updateData({'lastvisit': FieldValue.serverTimestamp()});
   }
 
   Future<void> setUserNickName(
@@ -24,8 +29,13 @@ class DBManager {
         .setData({'nickname': nickName});
   }
 
-  Future<void> createUserInfo({@required FirebaseUser currentUser, @required BuildContext context}) async {
-    await _firestore.collection('users').document('${currentUser.uid}').setData({
+  Future<void> createUserInfo(
+      {@required FirebaseUser currentUser,
+      @required BuildContext context}) async {
+    await _firestore
+        .collection('users')
+        .document('${currentUser.uid}')
+        .setData({
       'email': currentUser.email,
       'grade': 1,
       'point': 0,
@@ -72,8 +82,8 @@ class DBManager {
   }
 
   Future<void> openRoom(
-      {@required FirebaseUser currentUser,
-      @required String title,
+      {@required String title,
+      @required FirebaseUser currentUser,
       @required int charLimit,
       @required String initSentence,
       @required int partLimit,
@@ -92,7 +102,9 @@ class DBManager {
       'finished': false,
       'authorID': currentUser.uid,
       'author': _nickName,
-      'visit': 0
+      'visit': 0,
+      'participants': 1,
+      'isfull': false
     });
   }
 
@@ -261,8 +273,10 @@ class DBManager {
             .collection('comments')
             .document(documentID)
             .collection('likedBy')
-            .where('liker', isEqualTo: currentUser.uid).getDocuments().then((value) {
-              value.documents[0].reference.delete();
+            .where('liker', isEqualTo: currentUser.uid)
+            .getDocuments()
+            .then((value) {
+          value.documents[0].reference.delete();
         });
         break;
       case HeartType.Novel:
@@ -274,7 +288,9 @@ class DBManager {
             .collection('rooms')
             .document(roomID)
             .collection('likedBy')
-            .where('liker', isEqualTo: currentUser.uid).getDocuments().then((value) {
+            .where('liker', isEqualTo: currentUser.uid)
+            .getDocuments()
+            .then((value) {
           value.documents[0].reference.delete();
         });
         break;
@@ -291,17 +307,30 @@ class DBManager {
             .collection('relays')
             .document(documentID)
             .collection('likedBy')
-            .where('liker', isEqualTo: currentUser.uid).getDocuments().then((value) {
+            .where('liker', isEqualTo: currentUser.uid)
+            .getDocuments()
+            .then((value) {
           value.documents[0].reference.delete();
         });
         break;
     }
   }
 
-  Future<void> deleteSentence({@required FirebaseUser currentUser, @required roomID, @required sentenceID}) async {
-    await _firestore.collection('rooms').document(roomID).collection('relays').getDocuments().then((value) async {
-      for (var ds  in value.documents) {
-        await ds.reference.collection('likedBy').getDocuments().then((subvalue) async {
+  Future<void> deleteSentence(
+      {@required FirebaseUser currentUser,
+      @required roomID,
+      @required sentenceID}) async {
+    await _firestore
+        .collection('rooms')
+        .document(roomID)
+        .collection('relays')
+        .getDocuments()
+        .then((value) async {
+      for (var ds in value.documents) {
+        await ds.reference
+            .collection('likedBy')
+            .getDocuments()
+            .then((subvalue) async {
           for (var subds in subvalue.documents) {
             await subds.reference.delete();
           }
@@ -309,13 +338,29 @@ class DBManager {
         ds.reference.delete();
       }
     });
-    await _firestore.collection('rooms').document(roomID).collection('relays').document(sentenceID).delete();
+    await _firestore
+        .collection('rooms')
+        .document(roomID)
+        .collection('relays')
+        .document(sentenceID)
+        .delete();
   }
 
-  Future<void> deleteComment({@required FirebaseUser currentUser, @required roomID, @required commentID}) async {
-    await _firestore.collection('rooms').document(roomID).collection('comments').getDocuments().then((value) async {
-      for (var ds  in value.documents) {
-        await ds.reference.collection('likedBy').getDocuments().then((subvalue) async {
+  Future<void> deleteComment(
+      {@required FirebaseUser currentUser,
+      @required roomID,
+      @required commentID}) async {
+    await _firestore
+        .collection('rooms')
+        .document(roomID)
+        .collection('comments')
+        .getDocuments()
+        .then((value) async {
+      for (var ds in value.documents) {
+        await ds.reference
+            .collection('likedBy')
+            .getDocuments()
+            .then((subvalue) async {
           for (var subds in subvalue.documents) {
             await subds.reference.delete();
           }
@@ -323,22 +368,72 @@ class DBManager {
         ds.reference.delete();
       }
     });
-    await _firestore.collection('rooms').document(roomID).collection('comments').document(commentID).delete();
+    await _firestore
+        .collection('rooms')
+        .document(roomID)
+        .collection('comments')
+        .document(commentID)
+        .delete();
   }
 
   Future<Map> loadMyPage({@required FirebaseUser currentUser}) async {
-    DocumentReference docRef = _firestore.collection('users').document('${currentUser.uid}');
+    DocumentReference docRef =
+        _firestore.collection('users').document('${currentUser.uid}');
     DocumentSnapshot doc = await docRef.get();
     return doc.data;
   }
 
-  Future<Stream<QuerySnapshot>> loadNovelList({@required FirebaseUser currentUser, List<String> tags}) async {
-    Stream<QuerySnapshot> snapshots = _firestore.collection('rooms').where('tags', arrayContainsAny: tags).snapshots();
-    return snapshots;
+  Future<QuerySnapshot> loadNovelList(
+      {@required FirebaseUser currentUser,
+      List<String> tags,
+      dynamic startAt,
+      @required SortingOption sortingOption}) async {
+    QuerySnapshot snapshot;
+    Query defaultQuery;
+    if (tags != null) {
+      defaultQuery = _firestore
+          .collection('rooms')
+          .where('tags', arrayContainsAny: tags)
+          .limit(20);
+    } else {
+      defaultQuery = _firestore.collection('rooms').limit(20);
+    }
+    if (startAt == null) {
+      switch (sortingOption) {
+        case SortingOption.Date:
+          defaultQuery =
+              defaultQuery.orderBy(SortingOptions[sortingOption.index]);
+          break;
+        case SortingOption.Participatable:
+          defaultQuery =
+              defaultQuery.orderBy(SortingOptions[sortingOption.index]);
+          break;
+        case SortingOption.Likes:
+          defaultQuery =
+              defaultQuery.orderBy(SortingOptions[sortingOption.index]);
+          break;
+      }
+    } else {
+      switch (sortingOption) {
+        case SortingOption.Date:
+          defaultQuery = defaultQuery.orderBy('time').startAt(startAt);
+          break;
+        case SortingOption.Participatable:
+          defaultQuery = defaultQuery.orderBy('isfull').startAt(startAt);
+          break;
+        case SortingOption.Likes:
+          defaultQuery = defaultQuery.orderBy('likes').startAt(startAt);
+          break;
+      }
+    }
+    snapshot = await defaultQuery.getDocuments();
+    print(snapshot.documents[0].data);
+    return snapshot;
   }
 
   Future<String> setProfilePicture(File image) async {
-    StorageReference storageReference = _storage.ref().child('profile_pictures');
+    StorageReference storageReference =
+        _storage.ref().child('profile_pictures');
     StorageUploadTask uploadTask = storageReference.putFile(image);
     await uploadTask.onComplete;
     String url;
@@ -348,7 +443,8 @@ class DBManager {
     return url;
   }
 
-  Future showNickNameDialog({@required BuildContext context, @required FirebaseUser currentUser}) {
+  Future showNickNameDialog(
+      {@required BuildContext context, @required FirebaseUser currentUser}) {
     final _formKey = GlobalKey<FormState>();
     String _nickName;
     return showDialog(
@@ -361,8 +457,8 @@ class DBManager {
               Form(
                 key: _formKey,
                 child: TextFormField(
-                  decoration: InputDecoration(
-                      labelText: "별명", hintText: "별명은 한글 2~6자"),
+                  decoration:
+                      InputDecoration(labelText: "별명", hintText: "별명은 한글 2~6자"),
                   maxLength: 6,
                   onChanged: (text) {
                     _nickName = text;
@@ -383,14 +479,29 @@ class DBManager {
           actions: <Widget>[
             FlatButton(
                 onPressed: () async {
-                  bool isAlreadyUsed = await nickNameAlreadyUsed(nickName: _nickName);
-                  if (isAlreadyUsed){
-                    showDialog(context: context,
-                      child: AlertDialog(title: Text("별명 중복"), content: Text('이미 있는 별명입니다.'),actions: <Widget>[FlatButton(onPressed: (){Navigator.of(context).pop();}, child: Text('확인'),),],),);
-                  }
-                  else if (_formKey.currentState.validate()) {
-                    setUserNickName(currentUser: currentUser, nickName: _nickName);
-                    Navigator.of(context).pushAndRemoveUntil(mainRoute, (route) => false);
+                  bool isAlreadyUsed =
+                      await nickNameAlreadyUsed(nickName: _nickName);
+                  if (isAlreadyUsed) {
+                    showDialog(
+                      context: context,
+                      child: AlertDialog(
+                        title: Text("별명 중복"),
+                        content: Text('이미 있는 별명입니다.'),
+                        actions: <Widget>[
+                          FlatButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('확인'),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else if (_formKey.currentState.validate()) {
+                    setUserNickName(
+                        currentUser: currentUser, nickName: _nickName);
+                    Navigator.of(context).pushAndRemoveUntil(
+                        mainRoute(currentUser), (route) => false);
                   }
                 },
                 child: Text('확인'))

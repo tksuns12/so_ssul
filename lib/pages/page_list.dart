@@ -1,53 +1,138 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sossul/pages/page_work.dart';
 
-class ListPage extends StatelessWidget {
+import '../database.dart';
+
+class ListPage extends StatefulWidget {
+  final FirebaseUser currentUser;
+  const ListPage({Key key, this.currentUser}) : super(key: key);
+
+  @override
+  _ListPageState createState() => _ListPageState();
+}
+
+class _ListPageState extends State<ListPage> {
+  DBManager _dbManager;
+  ScrollController controller;
+  bool _isLoading=true;
+  bool _isEmpty = true;
+  List<DocumentSnapshot> _data = List<DocumentSnapshot>();
+  DocumentSnapshot _lastVisible;
+  final scrollViewKey = GlobalKey<ScrollableState>();
+  Widget childSliver;
+
+  @override
+  void initState() {
+    _dbManager = DBManager();
+    controller = ScrollController()
+      ..addListener(() {
+        if (!_isLoading) {
+          if (controller.position.pixels ==
+              controller.position.maxScrollExtent) {
+            setState(() {
+              _isLoading = true;
+            });
+            _getData(SortingOption.Date);
+          }
+        }
+      });
+    childSliver = _isEmpty ?
+    SliverToBoxAdapter(child: Container(alignment: Alignment.center,child: Text('올라온 글이 없습니다.'),))
+        :SliverList(
+      delegate: SliverChildBuilderDelegate(
+            (_, index) {
+          final DocumentSnapshot document = _data[index];
+          return ListItem(document: document,);
+        },
+        childCount: _data.length + 1,
+      ),
+    );
+    _getData(SortingOption.Date).whenComplete(() {print("getData Done!"
+    );});
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-
-    return CustomScrollView(
-      slivers: <Widget>[
-        SliverAppBar(
-          floating: true,
-          snap: true,
-          expandedHeight: 200,
-          flexibleSpace: FlexibleSpaceBar(
-            background: Column(children: <Widget>[
-              Expanded(
-                child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[
-                  SizedBox(height: 30, width: 300,child: TextField(
-                    keyboardType: TextInputType.text,
-                  )),
-                  IconButton(icon: Icon(Icons.search), onPressed: (){}),
-                ],),
+    return Stack(
+      children: <Widget>[
+        CustomScrollView(
+        key: scrollViewKey,
+        controller: controller,
+        slivers: <Widget>[
+          SliverAppBar(
+            floating: true,
+            snap: true,
+            expandedHeight: 200,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        SizedBox(
+                            height: 30,
+                            width: 300,
+                            child: TextField(
+                              keyboardType: TextInputType.text,
+                            )),
+                        IconButton(icon: Icon(Icons.search), onPressed: () {}),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],),
+            ),
+            actions: <Widget>[
+              IconButton(icon: Icon(Icons.search), onPressed: () {})
+            ],
           ),
-          actions: <Widget>[
-            IconButton(icon: Icon(Icons.search), onPressed: (){})
-          ],
-        ),
-    SliverList(delegate: SliverChildListDelegate(constructItemsList()))
-      ],
+          childSliver,
+        ],
+      ),
+        Visibility(child: Center(child: CircularProgressIndicator()), visible: _isLoading,),
+      ]
     );
+  }
+
+  Future<void> _getData(SortingOption sortingOption) async {
+    QuerySnapshot querySnapshot;
+    if (_lastVisible == null) {
+      querySnapshot = await _dbManager.loadNovelList(
+          currentUser: widget.currentUser, sortingOption: sortingOption);
+    } else {
+      querySnapshot = await _dbManager.loadNovelList(
+          currentUser: widget.currentUser,
+          sortingOption: sortingOption,
+          startAt: _lastVisible[SortingOptions[sortingOption.index]]);
+    }
+
+    if (querySnapshot != null && querySnapshot.documents.length > 0) {
+      _lastVisible =
+          querySnapshot.documents[querySnapshot.documents.length - 1];
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _isEmpty = false;
+          _data.addAll(querySnapshot.documents);
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
+          _isEmpty = true;
+        });
+      }
+    }
   }
 }
 
-List<ListItem> constructItemsList() {
-  return [
-    ListItem(),
-    ListItem(),
-    ListItem(),
-    ListItem(),
-    ListItem(),
-    ListItem(),
-    ListItem(),
-    ListItem(),
-    ListItem(),
-  ];
-}
-
 class ListItem extends StatefulWidget {
+  final DocumentSnapshot document;
+
+  const ListItem({Key key, @required this.document}) : super(key: key);
   @override
   _ListItemState createState() => _ListItemState();
 }
@@ -59,36 +144,61 @@ class _ListItemState extends State<ListItem> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          isSelected = isSelected? false:true;
+          isSelected = isSelected ? false : true;
         });
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Material(
-          elevation: isSelected?15:10,
-          color: isSelected?Colors.purpleAccent:Colors.white,
-          borderRadius: isSelected?BorderRadius.circular(20):BorderRadius.circular(30),
+          elevation: isSelected ? 15 : 10,
+          color: isSelected ? Colors.purpleAccent : Colors.white,
+          borderRadius: isSelected
+              ? BorderRadius.circular(20)
+              : BorderRadius.circular(30),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                '글쓰기방 제목',
-                style: TextStyle(fontSize: 30, color: isSelected?Colors.white:Colors.black),
+                '${widget.document.data['title']}',
+                style: TextStyle(
+                    fontSize: 30,
+                    color: isSelected ? Colors.white : Colors.black),
               ),
-              Text('Tag 들', style: TextStyle(color: isSelected?Colors.white:Colors.black),),
+              Text(
+                '${widget.document.data['tags']}',
+                style:
+                    TextStyle(color: isSelected ? Colors.white : Colors.black),
+              ),
               Padding(
                 padding: const EdgeInsets.only(left: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Container(child: Text('0/4', style: TextStyle(color: isSelected?Colors.white:Colors.black),),),
+                    Container(
+                      child: Text(
+                        '${widget.document.data['participants']}/${widget.document.data['partlimit']}',
+                        style: TextStyle(
+                            color: isSelected ? Colors.white : Colors.black),
+                      ),
+                    ),
                     FlatButton(
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) {return WorkPage();}));
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return WorkPage();
+                        }));
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[Icon(Icons.add), Text('참여하기',style: TextStyle(color: isSelected?Colors.white:Colors.black),)],
+                        children: <Widget>[
+                          Icon(Icons.add),
+                          Text(
+                            '참여하기',
+                            style: TextStyle(
+                                color:
+                                    isSelected ? Colors.white : Colors.black),
+                          )
+                        ],
                       ),
                     ),
                   ],

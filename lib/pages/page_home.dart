@@ -1,10 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 
 class HomeBody extends StatefulWidget {
   final Function changeMainState;
+  final FirebaseUser currentUser;
 
-  const HomeBody({Key key, this.changeMainState}) : super(key: key);
+  const HomeBody({Key key, this.changeMainState, this.currentUser}) : super(key: key);
 
   @override
   _HomeBodyState createState() => _HomeBodyState();
