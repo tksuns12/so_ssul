@@ -25,8 +25,8 @@ class Authentication {
           currentUser = await auth.currentUser();
           if (currentUser != null) {
             var userInfo = await _dbManager.loadUserInfo(currentUser: currentUser);
-            if (userInfo['nickname'] == null) {
-              showNickNameDialog(context: context, currentUser: currentUser);
+            if (userInfo == null) {
+              _dbManager.createUserInfo(currentUser: currentUser, context: context);
             } else {
               Navigator.of(context).pushAndRemoveUntil(mainRoute, (route) => false);
             }
@@ -80,8 +80,8 @@ class Authentication {
       currentUser = await auth.currentUser();
       if (currentUser != null) {
         var userInfo = await _dbManager.loadUserInfo(currentUser: currentUser);
-        if (userInfo['nickname'] == null) {
-          showNickNameDialog(context: context, currentUser: currentUser);
+        if (userInfo == null) {
+          _dbManager.createUserInfo(currentUser: currentUser, context: context);
         } else {
           Navigator.of(context).pushAndRemoveUntil(mainRoute, (route) => false);
         }
@@ -125,53 +125,13 @@ class Authentication {
       },
     );
   }
-  Future showNickNameDialog({@required BuildContext context, @required FirebaseUser currentUser}) {
-    final _formKey = GlobalKey<FormState>();
-    String _nickName;
-    return showDialog(
-        context: context,
-        barrierDismissible: false,
-        child: AlertDialog(
-          title: Text('별명 짓기'),
-          content: Column(
-            children: <Widget>[
-              Form(
-                key: _formKey,
-                child: TextFormField(
-                  decoration: InputDecoration(
-                      labelText: "별명", hintText: "별명은 한글 2~6자"),
-                  maxLength: 6,
-                  onChanged: (text) {
-                    _nickName = text;
-                  },
-                  validator: (value) {
-                    Pattern nickNamePattern = r'^[ㄱ-ㅎ|ㅏ-ㅣ|가-힣0-9]{2,6}$';
-                    RegExp nickNameRegex = RegExp(nickNamePattern);
-                    if (!nickNameRegex.hasMatch(value)) {
-                      return "별명은 숫자 포함 한글 2~6자 사이입니다.";
-                    } else {
-                      return null;
-                    }
-                  },
-                ),
-              ),
-            ],
-          ),
-          actions: <Widget>[
-            FlatButton(
-                onPressed: () async {
-                  bool isAlreadyUsed = await _dbManager.nickNameAlreadyUsed(nickName: _nickName);
-                  if (isAlreadyUsed){
-                    showDialog(context: context,
-                      child: AlertDialog(title: Text("별명 중복"), content: Text('이미 있는 별명입니다.'),actions: <Widget>[FlatButton(onPressed: (){Navigator.of(context).pop();}, child: Text('확인'),),],),);
-                  }
-                  else if (_formKey.currentState.validate()) {
-                    _dbManager.setUserNickName(currentUser: currentUser, nickName: _nickName);
-                    Navigator.of(context).pushAndRemoveUntil(mainRoute, (route) => false);
-                  }
-                },
-                child: Text('확인'))
-          ],
-        ));
+
+  Future<void> deleteAccount() async {
+    currentUser = await auth.currentUser();
+    await currentUser.delete();
+  }
+
+  Future<void> signOut() async {
+    await auth.signOut();
   }
 }

@@ -1,14 +1,14 @@
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sossul/authentication.dart';
-import 'package:sossul/local_data_keys.dart';
 import 'package:sossul/pages/page_sign_in.dart';
 import 'package:sossul/pages/splash_animation.dart';
-
 import '../main.dart';
+import 'package:sossul/database.dart';
+
+const kIsVirgin = "IsVirgin";
 
 class LaunchPage extends StatefulWidget {
   @override
@@ -17,6 +17,7 @@ class LaunchPage extends StatefulWidget {
 
 class _LaunchPageState extends State<LaunchPage> {
   Authentication _authentication = Authentication();
+  DBManager _dbManager;
 
   Future startTime() async {
     FirebaseUser _currentUser = await _authentication.auth.currentUser();
@@ -37,6 +38,8 @@ class _LaunchPageState extends State<LaunchPage> {
           ),
         );
       } else {
+        _dbManager = DBManager();
+        await _dbManager.onExecuteApp(currentUser: _currentUser);
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => Main()), (route) => false);
       }
