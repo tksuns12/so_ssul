@@ -46,11 +46,11 @@ class DBManager {
     showNickNameDialog(context: context, currentUser: currentUser);
   }
 
-  Future<Map> loadUserInfo({@required FirebaseUser currentUser}) async {
+  Future<Map> loadUserInfo({@required FirebaseUser user}) async {
     Map data;
     await _firestore
         .collection("users")
-        .document('${currentUser.uid}')
+        .document('${user.uid}')
         .get()
         .then((DocumentSnapshot ds) {
       data = ds.data;
@@ -88,7 +88,8 @@ class DBManager {
       @required String initSentence,
       @required int partLimit,
       @required List<String> tags,
-      @required bool visibility}) async {
+      @required bool visibility,
+      @required bool enjoy}) async {
     String _nickName = await getNickname(currentUser: currentUser);
     await _firestore.collection('rooms').add({
       'title': title,
@@ -104,7 +105,8 @@ class DBManager {
       'author': _nickName,
       'visit': 0,
       'participants': 1,
-      'isfull': false
+      'isfull': false,
+      'enjoy': enjoy,
     });
   }
 
@@ -383,7 +385,7 @@ class DBManager {
     return doc.data;
   }
 
-  Future<QuerySnapshot> loadNovelList(
+  Future<List<DocumentSnapshot>> loadNovelList(
       {@required FirebaseUser currentUser,
       List<String> tags,
       dynamic startAt,
@@ -427,8 +429,7 @@ class DBManager {
       }
     }
     snapshot = await defaultQuery.getDocuments();
-    print(snapshot.documents[0].data);
-    return snapshot;
+    return snapshot.documents;
   }
 
   Future<String> setProfilePicture(File image) async {
