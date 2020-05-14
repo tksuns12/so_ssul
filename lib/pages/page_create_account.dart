@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:sossul/database.dart';
 
 import '../authentication.dart';
+import '../constants.dart';
 import '../main.dart';
 
 class CreateAccountPage extends StatefulWidget {
@@ -21,12 +22,20 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: kMainColor,
         child: Stack(
       children: <Widget>[
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('Our Logo'),
+            Hero(
+                tag: 'appname',
+                child: Material(
+                    color: kMainColor,
+                    child: Text(
+                      'So.SSul',
+                      style: TextStyle(fontSize: 50, color: Colors.white),
+                    ))),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[

@@ -1,30 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:sossul/authentication.dart';
+import 'package:sossul/constants.dart';
 import 'package:sossul/pages/page_email_sign_in.dart';
 
 class SignInPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('So.SSul'),
-            FlatButton(
-              child: Text('이메일로 로그인'),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EmailSignIn(),
-                  ),
-                );
-              },
+      color: kMainColor,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Hero(tag: 'appname',
+          child: Material(color: kMainColor,child: Text('So.SSul', style: TextStyle(fontSize: 60, color: Colors.white),))),
+          SizedBox(height: 80,),
+          FlatButton(
+            child: Container(
+              width: 245,
+              height: 50,
+              child: Center(child: Text('이메일로 로그인', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),)),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(2),
+                  color: Colors.white),
             ),
-            GoogleSignInButton(),
-          ],
-        ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EmailSignIn(),
+                ),
+              );
+            },
+          ),
+          SizedBox(height: 10,),
+          GoogleSignInButton(),
+        ],
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sossul/constants.dart';
 import 'package:sossul/pages/page_home.dart';
 import 'package:sossul/pages/page_launch.dart';
@@ -54,11 +55,17 @@ class _MainState extends State<Main> {
         title: Text('[So. SSul]', style: TextStyle(color: kMainColor),),),
       null,
       AppBar(
-        title: Text('[So. SSul]'),),
+        bottom: PreferredSize(child: Divider(color: kMainColor, height: 0,), preferredSize: Size.fromHeight(4.0)),
+        elevation: 0,
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        title: Text('[So. SSul]', style: TextStyle(color: kMainColor),),),
       AppBar(
-        title: Text('[So. SSul]'),),
-      AppBar(
-        title: Text('[So. SSul]'),),
+        bottom: PreferredSize(child: Divider(color: kMainColor, height: 0,), preferredSize: Size.fromHeight(4.0)),
+        elevation: 0,
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        title: Text('[So. SSul]', style: TextStyle(color: kMainColor),),),
 
     ];
     return MaterialApp(
@@ -79,14 +86,13 @@ class _MainState extends State<Main> {
           unselectedItemColor: Colors.grey,
           selectedItemColor: kBottomNavigationItemColor,
           items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.home, size: 45,), title: Text('홈')),
+            BottomNavigationBarItem(icon: Icon(FontAwesomeIcons.home, size: 40,), title: Text('홈')),
             BottomNavigationBarItem(
-                icon: Icon(Icons.people, size: 45), title: Text('전체 목록')),
+                icon: Icon(FontAwesomeIcons.bookOpen, size: 40), title: Text('전체 목록')),
             BottomNavigationBarItem(
-                icon: Icon(Icons.textsms, size: 45), title: Text('내 글')),
-            BottomNavigationBarItem(icon: Icon(Icons.store, size: 45), title: Text('문장 마켓')),
+                icon: Icon(FontAwesomeIcons.trophy, size: 40), title: Text('리더 보드')),
             BottomNavigationBarItem(
-                icon: Icon(Icons.person, size: 45), title: Text('프로필')),
+                icon: Icon(FontAwesomeIcons.userCog, size: 40), title: Text('마이 페이지')),
           ],
           currentIndex: _selectedPageIndex,
           onTap: (int index) {

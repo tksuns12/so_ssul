@@ -9,7 +9,11 @@ import 'package:sossul/pages/routes.dart';
 
 enum HeartType { Novel, Sentence, Comment }
 enum SortingOption { Date, Participatable, Likes }
-const SortingOptions = [DBKeys.kRoomCreatedTimeKey, DBKeys.kRoomIsFullKey, DBKeys.kRoomLikesKey];
+const SortingOptions = [
+  DBKeys.kRoomCreatedTimeKey,
+  DBKeys.kRoomIsFullKey,
+  DBKeys.kRoomLikesKey
+];
 
 class DBManager {
   Firestore _firestore = Firestore.instance;
@@ -20,6 +24,27 @@ class DBManager {
         .collection(DBKeys.kUserCollectionID)
         .document('${currentUser.uid}')
         .updateData({DBKeys.kUserLastVisitKey: FieldValue.serverTimestamp()});
+  }
+
+  Future<void> participateInRoom(
+      {@required FirebaseUser currentUser, @required roomID}) async {
+    String _nickName = await getNickname(currentUser: currentUser);
+    await _firestore
+        .collection(DBKeys.kRoomCollectionID)
+        .document(roomID)
+        .get()
+        .then((value) async {
+      if (!value.data[DBKeys.kRoomIsFullKey]) {
+        await _firestore
+            .collection(DBKeys.kRoomCollectionID)
+            .document(roomID)
+            .setData({
+          DBKeys.kRoomParticipantsIDKey: FieldValue.arrayUnion([currentUser]),
+          DBKeys.kRoomParticipantsNicknameKey: FieldValue.arrayUnion([_nickName]),
+          DBKeys.kRoomParticipantsNumberKey: FieldValue.increment(1),
+        });
+      }
+    });
   }
 
   Future<void> setUserNickName(
@@ -115,7 +140,8 @@ class DBManager {
     // 조회수를 1 올림
     await _firestore
         .collection(DBKeys.kRoomCollectionID)
-        .document(roomID).updateData({DBKeys.kRoomVisitKey: FieldValue.increment(1)});
+        .document(roomID)
+        .updateData({DBKeys.kRoomVisitKey: FieldValue.increment(1)});
   }
 
   Future<void> addSentence(
@@ -206,7 +232,10 @@ class DBManager {
 
   Future<void> closeRoom(
       {@required FirebaseUser currentUser, @required roomID}) async {
-    await _firestore.collection(DBKeys.kRoomCollectionID).document(roomID).delete();
+    await _firestore
+        .collection(DBKeys.kRoomCollectionID)
+        .document(roomID)
+        .delete();
     await _firestore
         .collection(DBKeys.kRoomCollectionID)
         .document(roomID)
@@ -380,8 +409,9 @@ class DBManager {
   }
 
   Future<Map> loadMyPage({@required FirebaseUser currentUser}) async {
-    DocumentReference docRef =
-        _firestore.collection(DBKeys.kUserCollectionID).document('${currentUser.uid}');
+    DocumentReference docRef = _firestore
+        .collection(DBKeys.kUserCollectionID)
+        .document('${currentUser.uid}');
     DocumentSnapshot doc = await docRef.get();
     return doc.data;
   }
@@ -419,13 +449,16 @@ class DBManager {
     } else {
       switch (sortingOption) {
         case SortingOption.Date:
-          defaultQuery = defaultQuery.orderBy(DBKeys.kRoomCreatedTimeKey).startAt(startAt);
+          defaultQuery =
+              defaultQuery.orderBy(DBKeys.kRoomCreatedTimeKey).startAt(startAt);
           break;
         case SortingOption.Participatable:
-          defaultQuery = defaultQuery.orderBy(DBKeys.kRoomIsFullKey).startAt(startAt);
+          defaultQuery =
+              defaultQuery.orderBy(DBKeys.kRoomIsFullKey).startAt(startAt);
           break;
         case SortingOption.Likes:
-          defaultQuery = defaultQuery.orderBy(DBKeys.kRoomLikesKey).startAt(startAt);
+          defaultQuery =
+              defaultQuery.orderBy(DBKeys.kRoomLikesKey).startAt(startAt);
           break;
       }
     }

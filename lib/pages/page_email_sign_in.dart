@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sossul/authentication.dart';
+import 'package:sossul/constants.dart';
 import 'package:sossul/pages/page_create_account.dart';
 
 class EmailSignIn extends StatefulWidget {
@@ -16,21 +18,36 @@ class _EmailSignInState extends State<EmailSignIn> {
   @override
   Widget build(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
-    return Container(
-      child: Material(
-        child: Stack(children: <Widget>[
+    return Material(
+      color: kMainColor,
+      child: Stack(
+        children: <Widget>[
           Form(
             key: _formKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text('Our Logo'),
+                Hero(
+                    tag: 'appname',
+                    child: Material(
+                        color: kMainColor,
+                        child: Text(
+                          'So.SSul',
+                          style: TextStyle(fontSize: 50, color: Colors.white),
+                        ))),
                 Padding(
-                  padding: const EdgeInsets.only(top: 200),
+                  padding: const EdgeInsets.only(top: 200, bottom: 40),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Icon(Icons.email),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Icon(
+                          FontAwesomeIcons.envelope,
+                          size: 25,
+                          color: Colors.white,
+                        ),
+                      ),
                       Column(
                         children: <Widget>[
                           SizedBox(
@@ -41,7 +58,8 @@ class _EmailSignInState extends State<EmailSignIn> {
                                 email = text;
                               },
                               validator: (value) {
-                                Pattern emailPattern = r'^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$';
+                                Pattern emailPattern =
+                                    r'^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$';
                                 RegExp emailRegex = RegExp(emailPattern);
                                 if (!emailRegex.hasMatch(value)) {
                                   return "이메일 주소 형식이 안 맞습니다.";
@@ -59,22 +77,23 @@ class _EmailSignInState extends State<EmailSignIn> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Icon(Icons.vpn_key),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 20),
+                      child: Icon(FontAwesomeIcons.key, color: Colors.white,),
+                    ),
                     Column(
                       children: <Widget>[
                         SizedBox(
                           width: 250,
                           child: TextFormField(
-                            maxLength: 12,
+                            keyboardType: TextInputType.text,
                             obscureText: true,
                             onChanged: (text) {
                               password = text;
                             },
                             validator: (value) {
-                              Pattern passwordPattern = r'^(?=.*[a-z])(?=.*[0-9])(?=.{8,12})$';
-                              RegExp passwordRegex = RegExp(passwordPattern);
-                              if (!passwordRegex.hasMatch(value)) {
-                                return '비밀번호는 영문, 숫자 8-12 자리입니다.';
+                              if (value == null) {
+                                return '비밀번호를 입력하십시오.';
                               } else {
                                 return null;
                               }
@@ -92,16 +111,21 @@ class _EmailSignInState extends State<EmailSignIn> {
                       child: Text('로그인'),
                     ),
                     onPressed: () async {
-                      setState(() {
-                        isLoading = true;
-                      });
-                      await _authorization
-                          .signInEmail(
-                          context: context, email: email, password: password).then((value) {
-                            setState(() {
-                              isLoading = false;
-                            });
-                      });
+                      if (_formKey.currentState.validate()) {
+                        setState(() {
+                          isLoading = true;
+                        });
+                        await _authorization
+                            .signInEmail(
+                                context: context,
+                                email: email,
+                                password: password)
+                            .then((value) {
+                          setState(() {
+                            isLoading = false;
+                          });
+                        });
+                      }
                     },
                   ),
                 ),
@@ -122,8 +146,11 @@ class _EmailSignInState extends State<EmailSignIn> {
               ],
             ),
           ),
-          Visibility(child: Center(child: CircularProgressIndicator()), visible: isLoading,),
-        ],),
+          Visibility(
+            child: Center(child: CircularProgressIndicator()),
+            visible: isLoading,
+          ),
+        ],
       ),
     );
   }

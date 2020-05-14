@@ -30,6 +30,7 @@ dependencies:
   http: ^0.12.1
   cloud_firestore: ^0.13.5
   firebase_storage: ^3.1.5
+  font_awesome_flutter: ^8.8.1
 
 dev_dependencies:
   flutter_test:
