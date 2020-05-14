@@ -11,29 +11,52 @@ class _EmailSignInState extends State<EmailSignIn> {
   Authentication _authorization = Authentication();
   String email;
   String password;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: Material(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('Our Logo'),
-            Padding(
-              padding: const EdgeInsets.only(top: 200),
-              child: Row(
+        child: Stack(children: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text('Our Logo'),
+              Padding(
+                padding: const EdgeInsets.only(top: 200),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.email),
+                    Column(
+                      children: <Widget>[
+                        SizedBox(
+                          width: 250,
+                          child: TextField(
+                            keyboardType: TextInputType.emailAddress,
+                            onChanged: (text) {
+                              email = text;
+                            },
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Icon(Icons.email),
+                  Icon(Icons.vpn_key),
                   Column(
                     children: <Widget>[
                       SizedBox(
                         width: 250,
                         child: TextField(
-                          keyboardType: TextInputType.emailAddress,
+                          maxLength: 12,
+                          obscureText: true,
                           onChanged: (text) {
-                            email = text;
+                            password = text;
                           },
                         ),
                       ),
@@ -41,56 +64,44 @@ class _EmailSignInState extends State<EmailSignIn> {
                   )
                 ],
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(Icons.vpn_key),
-                Column(
-                  children: <Widget>[
-                    SizedBox(
-                      width: 250,
-                      child: TextField(
-                        maxLength: 12,
-                        obscureText: true,
-                        onChanged: (text) {
-                          password = text;
-                        },
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: FlatButton(
-                child: Container(
-                  child: Text('로그인'),
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: FlatButton(
+                  child: Container(
+                    child: Text('로그인'),
+                  ),
+                  onPressed: () async {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    await _authorization
+                        .signInEmail(
+                        context: context, email: email, password: password).then((value) {
+                          setState(() {
+                            isLoading = false;
+                          });
+                    });
+                  },
                 ),
-                onPressed: () async {
-                  await _authorization
-                      .signInEmail(
-                          context: context, email: email, password: password);
-                },
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 50),
-              child: FlatButton(
-                child: Text('계정 생성'),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CreateAccountPage(),
-                    ),
-                  );
-                },
+              Padding(
+                padding: const EdgeInsets.only(top: 50),
+                child: FlatButton(
+                  child: Text('계정 생성'),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CreateAccountPage(),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+          Visibility(child: CircularProgressIndicator(), visible: isLoading,),
+        ],),
       ),
     );
   }

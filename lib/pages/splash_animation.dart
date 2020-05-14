@@ -59,7 +59,6 @@ class SplashAnimation2 extends StatefulWidget {
 }
 
 class _SplashAnimation2State extends State<SplashAnimation2> {
-
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -91,7 +90,12 @@ class _SplashAnimation2State extends State<SplashAnimation2> {
                   speed: Duration(milliseconds: 300),
                   totalRepeatCount: 1,
                   onFinished: () {
-                    Navigator.pushReplacement(context, CustomPageRoute(SignInPage(),),);
+                    Navigator.pushReplacement(
+                      context,
+                      CustomPageRoute(
+                        SignInPage(),
+                      ),
+                    );
                   },
                 ),
               ),

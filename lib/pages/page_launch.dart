@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sossul/authentication.dart';
 import 'package:sossul/pages/page_sign_in.dart';
+import 'package:sossul/pages/routes.dart';
 import 'package:sossul/pages/splash_animation.dart';
 import '../main.dart';
 import 'package:sossul/database.dart';
@@ -41,7 +42,7 @@ class _LaunchPageState extends State<LaunchPage> {
         _dbManager = DBManager();
         await _dbManager.onExecuteApp(currentUser: _currentUser);
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => Main(currentUser: _currentUser,)), (route) => false);
+            mainRoute(_currentUser), (route) => false);
       }
     }
   }

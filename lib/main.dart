@@ -58,8 +58,8 @@ class _MainState extends State<Main> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.dark().copyWith(
-        appBarTheme: AppBarTheme(color: Colors.greenAccent),
+      theme: ThemeData.light().copyWith(
+        appBarTheme: AppBarTheme(color: Colors.white),
       ),
       home: Scaffold(
         floatingActionButton: _selectedPageIndex==1?FloatingActionButton(onPressed: () {}, child: Icon(Icons.add),):null,
@@ -69,18 +69,20 @@ class _MainState extends State<Main> {
           child: _bodyWidgets[_selectedPageIndex],
         ),
         bottomNavigationBar: BottomNavigationBar(
-          showUnselectedLabels: true,
-          unselectedItemColor: Colors.white,
-          selectedItemColor: Colors.greenAccent,
+          type: BottomNavigationBarType.fixed,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          unselectedItemColor: Colors.grey,
+          selectedItemColor: Color(0xFFb2ebf2),
           items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.home), title: Text('홈')),
+            BottomNavigationBarItem(icon: Icon(Icons.home, size: 45,), title: Text('홈')),
             BottomNavigationBarItem(
-                icon: Icon(Icons.people), title: Text('전체 목록')),
+                icon: Icon(Icons.people, size: 45), title: Text('전체 목록')),
             BottomNavigationBarItem(
-                icon: Icon(Icons.textsms), title: Text('내 글')),
-            BottomNavigationBarItem(icon: Icon(Icons.store), title: Text('문장 마켓')),
+                icon: Icon(Icons.textsms, size: 45), title: Text('내 글')),
+            BottomNavigationBarItem(icon: Icon(Icons.store, size: 45), title: Text('문장 마켓')),
             BottomNavigationBarItem(
-                icon: Icon(Icons.person), title: Text('프로필')),
+                icon: Icon(Icons.person, size: 45), title: Text('프로필')),
           ],
           currentIndex: _selectedPageIndex,
           onTap: (int index) {

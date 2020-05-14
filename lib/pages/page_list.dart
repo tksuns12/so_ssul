@@ -113,18 +113,16 @@ class _ListPageState extends State<ListPage> {
     if (querySnapshot != null && querySnapshot.documents.length > 0) {
       _lastVisible =
           querySnapshot.documents[querySnapshot.documents.length - 1];
-      if (mounted) {
         setState(() {
           _isLoading = false;
           _isEmpty = false;
           _data.addAll(querySnapshot.documents);
         });
-      } else {
-        setState(() {
-          _isLoading = false;
-          _isEmpty = true;
-        });
-      }
+    } else {
+      setState(() {
+        _isLoading = false;
+        _isEmpty = true;
+      });
     }
   }
 }
