@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sossul/constants.dart';
 import 'package:sossul/pages/page_home.dart';
 import 'package:sossul/pages/page_launch.dart';
 import 'package:sossul/pages/page_list.dart';
@@ -40,40 +41,43 @@ class _MainState extends State<Main> {
       Container(),
     ];
 
-    _appBars = <AppBar>[
-      AppBar(
-          title: Text('[So.SSul]]'),),
-      null,
-      AppBar(
-        title: Text('[So.SSul]]'),),
-      AppBar(
-        title: Text('[So.SSul]]'),),
-      AppBar(
-        title: Text('[So.SSul]]'),),
-
-    ];
-
   }
 
   @override
   Widget build(BuildContext context) {
+    _appBars = <AppBar>[
+      AppBar(
+        bottom: PreferredSize(child: Divider(color: kMainColor, height: 0,), preferredSize: Size.fromHeight(4.0)),
+        elevation: 0,
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        title: Text('[So. SSul]', style: TextStyle(color: kMainColor),),),
+      null,
+      AppBar(
+        title: Text('[So. SSul]'),),
+      AppBar(
+        title: Text('[So. SSul]'),),
+      AppBar(
+        title: Text('[So. SSul]'),),
+
+    ];
     return MaterialApp(
-      theme: ThemeData.light().copyWith(
-        appBarTheme: AppBarTheme(color: Colors.white),
-      ),
       home: Scaffold(
+        backgroundColor: Colors.white,
         floatingActionButton: _selectedPageIndex==1?FloatingActionButton(onPressed: () {}, child: Icon(Icons.add),):null,
         appBar: _appBars[_selectedPageIndex],
 
-        body: Center(
-          child: _bodyWidgets[_selectedPageIndex],
+        body: IndexedStack(
+          index: _selectedPageIndex,
+          children: _bodyWidgets,
         ),
         bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Colors.white,
           type: BottomNavigationBarType.fixed,
           showSelectedLabels: false,
           showUnselectedLabels: false,
           unselectedItemColor: Colors.grey,
-          selectedItemColor: Color(0xFFb2ebf2),
+          selectedItemColor: kBottomNavigationItemColor,
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(icon: Icon(Icons.home, size: 45,), title: Text('홈')),
             BottomNavigationBarItem(

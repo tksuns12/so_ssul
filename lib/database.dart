@@ -4,11 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:sossul/constants.dart';
 import 'package:sossul/pages/routes.dart';
 
 enum HeartType { Novel, Sentence, Comment }
 enum SortingOption { Date, Participatable, Likes }
-const SortingOptions = ['time', 'isfull', 'likes'];
+const SortingOptions = [DBKeys.kRoomCreatedTimeKey, DBKeys.kRoomIsFullKey, DBKeys.kRoomLikesKey];
 
 class DBManager {
   Firestore _firestore = Firestore.instance;
@@ -16,31 +17,31 @@ class DBManager {
 
   Future<void> onExecuteApp({@required FirebaseUser currentUser}) async {
     await _firestore
-        .collection('users')
+        .collection(DBKeys.kUserCollectionID)
         .document('${currentUser.uid}')
-        .updateData({'lastvisit': FieldValue.serverTimestamp()});
+        .updateData({DBKeys.kUserLastVisitKey: FieldValue.serverTimestamp()});
   }
 
   Future<void> setUserNickName(
       {@required currentUser, @required nickName}) async {
     await _firestore
-        .collection('users')
+        .collection(DBKeys.kUserCollectionID)
         .document('${currentUser.uid}')
-        .setData({'nickname': nickName});
+        .setData({DBKeys.kUserNickNameKey: nickName});
   }
 
-  Future<void> createUserInfo(
+  Future<void> createNewUserInfo(
       {@required FirebaseUser currentUser,
       @required BuildContext context}) async {
     await _firestore
-        .collection('users')
+        .collection(DBKeys.kUserCollectionID)
         .document('${currentUser.uid}')
         .setData({
-      'email': currentUser.email,
-      'grade': 1,
-      'point': 0,
-      'joindate': FieldValue.serverTimestamp(),
-      'lastvisit': FieldValue.serverTimestamp(),
+      DBKeys.kUserEmailKey: currentUser.email,
+      DBKeys.kUserGradeKey: 1,
+      DBKeys.kUserPointKey: kInitialPoint,
+      DBKeys.kUserJoinDateKey: FieldValue.serverTimestamp(),
+      DBKeys.kUserLastVisitKey: FieldValue.serverTimestamp(),
     });
 
     showNickNameDialog(context: context, currentUser: currentUser);
@@ -49,7 +50,7 @@ class DBManager {
   Future<Map> loadUserInfo({@required FirebaseUser user}) async {
     Map data;
     await _firestore
-        .collection("users")
+        .collection(DBKeys.kUserCollectionID)
         .document('${user.uid}')
         .get()
         .then((DocumentSnapshot ds) {
@@ -60,8 +61,8 @@ class DBManager {
 
   Future<bool> nickNameAlreadyUsed({@required String nickName}) async {
     var data = await _firestore
-        .collection("users")
-        .where("nickname", isEqualTo: nickName)
+        .collection(DBKeys.kUserCollectionID)
+        .where(DBKeys.kUserNickNameKey, isEqualTo: nickName)
         .snapshots()
         .first;
     print(data.documents.length);
@@ -72,11 +73,11 @@ class DBManager {
   Future<String> getNickname({@required currentUser}) async {
     String nickName;
     await _firestore
-        .collection('users')
+        .collection(DBKeys.kUserCollectionID)
         .document('${currentUser.uid}')
         .get()
         .then((value) {
-      nickName = value.data['nickname'];
+      nickName = value.data[DBKeys.kUserNickNameKey];
     });
     return nickName;
   }
@@ -88,33 +89,33 @@ class DBManager {
       @required String initSentence,
       @required int partLimit,
       @required List<String> tags,
-      @required bool visibility,
       @required bool enjoy}) async {
     String _nickName = await getNickname(currentUser: currentUser);
-    await _firestore.collection('rooms').add({
-      'title': title,
-      'charlimit': charLimit,
-      'initsentence': initSentence,
-      'partlimit': partLimit,
-      'tags': tags,
-      'visibility': visibility,
-      'likes': 0,
-      'time': FieldValue.serverTimestamp(),
-      'finished': false,
-      'authorID': currentUser.uid,
-      'author': _nickName,
-      'visit': 0,
-      'participants': 1,
-      'isfull': false,
-      'enjoy': enjoy,
+    await _firestore.collection(DBKeys.kRoomCollectionID).add({
+      DBKeys.kRoomTitleKey: title,
+      DBKeys.kRoomCharacterLimitKey: charLimit,
+      DBKeys.kRoomInitialSentenceKey: initSentence,
+      DBKeys.kRoomParticipantLimitKey: partLimit,
+      DBKeys.kRoomTagsKey: tags,
+      DBKeys.kRoomLikesKey: 0,
+      DBKeys.kRoomCreatedTimeKey: FieldValue.serverTimestamp(),
+      DBKeys.kRoomIsFinishedKey: false,
+      DBKeys.kRoomAuthorIDKey: currentUser.uid,
+      DBKeys.kRoomAuthorNicknameKey: _nickName,
+      DBKeys.kRoomVisitKey: 0,
+      DBKeys.kRoomParticipantsIDKey: [currentUser.uid],
+      DBKeys.kRoomIsFullKey: false,
+      DBKeys.kRoomEnjoyKey: enjoy,
+      DBKeys.kRoomParticipantsNicknameKey: [_nickName],
+      DBKeys.kRoomParticipantsNumberKey: 1,
     });
   }
 
-  Future<void> enterRoom({@required currentUser, @required roomID}) async {
+  Future<void> increaseVisit({@required currentUser, @required roomID}) async {
+    // 조회수를 1 올림
     await _firestore
-        .collection('rooms')
-        .document(roomID)
-        .updateData({'participants': FieldValue.arrayUnion(currentUser.uid)});
+        .collection(DBKeys.kRoomCollectionID)
+        .document(roomID).updateData({DBKeys.kRoomVisitKey: FieldValue.increment(1)});
   }
 
   Future<void> addSentence(
@@ -123,15 +124,15 @@ class DBManager {
       @required roomID}) async {
     String _nickName = await getNickname(currentUser: currentUser);
     await _firestore
-        .collection('rooms')
+        .collection(DBKeys.kRoomCollectionID)
         .document(roomID)
-        .collection('relays')
+        .collection(DBKeys.kRelayCollectionID)
         .add({
-      'authorID': currentUser.uid,
-      'author': _nickName,
-      'time': FieldValue.serverTimestamp(),
-      'content': content,
-      'likes': 0
+      DBKeys.kRelayAuthorID: currentUser.uid,
+      DBKeys.kRelayAuthorNickname: _nickName,
+      DBKeys.kRelayCreatedTime: FieldValue.serverTimestamp(),
+      DBKeys.kRelayContentKey: content,
+      DBKeys.kRelayLikesKey: 0,
     });
   }
 
@@ -141,15 +142,15 @@ class DBManager {
       @required roomID}) async {
     String _nickName = await getNickname(currentUser: currentUser);
     await _firestore
-        .collection('rooms')
+        .collection(DBKeys.kRoomCollectionID)
         .document(roomID)
-        .collection('comments')
+        .collection(DBKeys.kCommentsCollectionID)
         .add({
-      'authorID': currentUser.uid,
-      'author': _nickName,
-      'time': FieldValue.serverTimestamp(),
-      'content': content,
-      'likes': 0,
+      DBKeys.kCommentsAuthorID: currentUser.uid,
+      DBKeys.kCommentsAuthorNickname: _nickName,
+      DBKeys.kCommentsCreatedTime: FieldValue.serverTimestamp(),
+      DBKeys.kCommentsContentKey: content,
+      DBKeys.kCommentsLikesKey: 0,
     });
   }
 
@@ -161,60 +162,60 @@ class DBManager {
     switch (heartType) {
       case HeartType.Comment:
         await _firestore
-            .collection('rooms')
+            .collection(DBKeys.kRoomCollectionID)
             .document(roomID)
-            .collection('comments')
+            .collection(DBKeys.kCommentsCollectionID)
             .document(documentID)
-            .updateData({'likes': FieldValue.increment(1)});
+            .updateData({DBKeys.kCommentsLikesKey: FieldValue.increment(1)});
         await _firestore
-            .collection('rooms')
+            .collection(DBKeys.kRoomCollectionID)
             .document(roomID)
-            .collection('comments')
+            .collection(DBKeys.kCommentsCollectionID)
             .document(documentID)
-            .collection('likedBy')
-            .add({'liker': currentUser.uid});
+            .collection(DBKeys.kLikedbyCollectionID)
+            .add({DBKeys.kLikedbyLikerKey: currentUser.uid});
         break;
       case HeartType.Novel:
         await _firestore
-            .collection('rooms')
+            .collection(DBKeys.kRoomCollectionID)
             .document(roomID)
-            .updateData({'likes': FieldValue.increment(1)});
+            .updateData({DBKeys.kRoomLikesKey: FieldValue.increment(1)});
         await _firestore
-            .collection('rooms')
+            .collection(DBKeys.kRoomCollectionID)
             .document(roomID)
-            .collection('likedBy')
-            .add({'liker': currentUser.uid});
+            .collection(DBKeys.kLikedbyCollectionID)
+            .add({DBKeys.kLikedbyLikerKey: currentUser.uid});
         break;
       case HeartType.Sentence:
         await _firestore
-            .collection('rooms')
+            .collection(DBKeys.kRoomCollectionID)
             .document(roomID)
-            .collection('relays')
+            .collection(DBKeys.kRelayCollectionID)
             .document(documentID)
-            .updateData({'likes': FieldValue.increment(1)});
+            .updateData({DBKeys.kRelayLikesKey: FieldValue.increment(1)});
         await _firestore
-            .collection('rooms')
+            .collection(DBKeys.kRoomCollectionID)
             .document(roomID)
-            .collection('relays')
+            .collection(DBKeys.kRelayCollectionID)
             .document(documentID)
-            .collection('likedBy')
-            .add({'liker': currentUser.uid});
+            .collection(DBKeys.kLikedbyCollectionID)
+            .add({DBKeys.kLikedbyLikerKey: currentUser.uid});
         break;
     }
   }
 
   Future<void> closeRoom(
       {@required FirebaseUser currentUser, @required roomID}) async {
-    await _firestore.collection('rooms').document(roomID).delete();
+    await _firestore.collection(DBKeys.kRoomCollectionID).document(roomID).delete();
     await _firestore
-        .collection('rooms')
+        .collection(DBKeys.kRoomCollectionID)
         .document(roomID)
-        .collection('relays')
+        .collection(DBKeys.kRelayCollectionID)
         .getDocuments()
         .then((value) async {
       for (DocumentSnapshot ds in value.documents) {
         await ds.reference
-            .collection('likedBy')
+            .collection(DBKeys.kLikedbyCollectionID)
             .getDocuments()
             .then((subvalue) {
           for (DocumentSnapshot subds in subvalue.documents) {
@@ -226,14 +227,14 @@ class DBManager {
     });
 
     await _firestore
-        .collection('rooms')
+        .collection(DBKeys.kRoomCollectionID)
         .document(roomID)
-        .collection('comments')
+        .collection(DBKeys.kCommentsCollectionID)
         .getDocuments()
         .then((value) async {
       for (DocumentSnapshot ds in value.documents) {
         await ds.reference
-            .collection('likedBy')
+            .collection(DBKeys.kLikedbyCollectionID)
             .getDocuments()
             .then((subvalue) {
           for (DocumentSnapshot subds in subvalue.documents) {
@@ -245,9 +246,9 @@ class DBManager {
     });
 
     await _firestore
-        .collection('rooms')
+        .collection(DBKeys.kRoomCollectionID)
         .document(roomID)
-        .collection('likedBy')
+        .collection(DBKeys.kLikedbyCollectionID)
         .getDocuments()
         .then((value) {
       for (DocumentSnapshot ds in value.documents) {
@@ -264,18 +265,18 @@ class DBManager {
     switch (heartType) {
       case HeartType.Comment:
         await _firestore
-            .collection('rooms')
+            .collection(DBKeys.kRoomCollectionID)
             .document(roomID)
-            .collection('comments')
+            .collection(DBKeys.kCommentsCollectionID)
             .document(documentID)
-            .updateData({'likes': FieldValue.increment(-1)});
+            .updateData({DBKeys.kCommentsLikesKey: FieldValue.increment(-1)});
         await _firestore
-            .collection('rooms')
+            .collection(DBKeys.kRoomCollectionID)
             .document(roomID)
-            .collection('comments')
+            .collection(DBKeys.kCommentsCollectionID)
             .document(documentID)
-            .collection('likedBy')
-            .where('liker', isEqualTo: currentUser.uid)
+            .collection(DBKeys.kLikedbyCollectionID)
+            .where(DBKeys.kLikedbyLikerKey, isEqualTo: currentUser.uid)
             .getDocuments()
             .then((value) {
           value.documents[0].reference.delete();
@@ -283,14 +284,14 @@ class DBManager {
         break;
       case HeartType.Novel:
         await _firestore
-            .collection('rooms')
+            .collection(DBKeys.kRoomCollectionID)
             .document(roomID)
-            .updateData({'likes': FieldValue.increment(-1)});
+            .updateData({DBKeys.kRoomLikesKey: FieldValue.increment(-1)});
         await _firestore
-            .collection('rooms')
+            .collection(DBKeys.kRoomCollectionID)
             .document(roomID)
-            .collection('likedBy')
-            .where('liker', isEqualTo: currentUser.uid)
+            .collection(DBKeys.kLikedbyCollectionID)
+            .where(DBKeys.kLikedbyLikerKey, isEqualTo: currentUser.uid)
             .getDocuments()
             .then((value) {
           value.documents[0].reference.delete();
@@ -298,18 +299,18 @@ class DBManager {
         break;
       case HeartType.Sentence:
         await _firestore
-            .collection('rooms')
+            .collection(DBKeys.kRoomCollectionID)
             .document(roomID)
-            .collection('relays')
+            .collection(DBKeys.kRelayCollectionID)
             .document(documentID)
-            .updateData({'likes': FieldValue.increment(-1)});
+            .updateData({DBKeys.kRelayLikesKey: FieldValue.increment(-1)});
         await _firestore
-            .collection('rooms')
+            .collection(DBKeys.kRoomCollectionID)
             .document(roomID)
-            .collection('relays')
+            .collection(DBKeys.kRelayCollectionID)
             .document(documentID)
-            .collection('likedBy')
-            .where('liker', isEqualTo: currentUser.uid)
+            .collection(DBKeys.kLikedbyCollectionID)
+            .where(DBKeys.kLikedbyLikerKey, isEqualTo: currentUser.uid)
             .getDocuments()
             .then((value) {
           value.documents[0].reference.delete();
@@ -323,14 +324,14 @@ class DBManager {
       @required roomID,
       @required sentenceID}) async {
     await _firestore
-        .collection('rooms')
+        .collection(DBKeys.kRoomCollectionID)
         .document(roomID)
-        .collection('relays')
+        .collection(DBKeys.kRelayCollectionID)
         .getDocuments()
         .then((value) async {
       for (var ds in value.documents) {
         await ds.reference
-            .collection('likedBy')
+            .collection(DBKeys.kLikedbyCollectionID)
             .getDocuments()
             .then((subvalue) async {
           for (var subds in subvalue.documents) {
@@ -341,9 +342,9 @@ class DBManager {
       }
     });
     await _firestore
-        .collection('rooms')
+        .collection(DBKeys.kRoomCollectionID)
         .document(roomID)
-        .collection('relays')
+        .collection(DBKeys.kRelayCollectionID)
         .document(sentenceID)
         .delete();
   }
@@ -353,14 +354,14 @@ class DBManager {
       @required roomID,
       @required commentID}) async {
     await _firestore
-        .collection('rooms')
+        .collection(DBKeys.kRoomCollectionID)
         .document(roomID)
-        .collection('comments')
+        .collection(DBKeys.kCommentsCollectionID)
         .getDocuments()
         .then((value) async {
       for (var ds in value.documents) {
         await ds.reference
-            .collection('likedBy')
+            .collection(DBKeys.kLikedbyCollectionID)
             .getDocuments()
             .then((subvalue) async {
           for (var subds in subvalue.documents) {
@@ -371,16 +372,16 @@ class DBManager {
       }
     });
     await _firestore
-        .collection('rooms')
+        .collection(DBKeys.kRoomCollectionID)
         .document(roomID)
-        .collection('comments')
+        .collection(DBKeys.kCommentsCollectionID)
         .document(commentID)
         .delete();
   }
 
   Future<Map> loadMyPage({@required FirebaseUser currentUser}) async {
     DocumentReference docRef =
-        _firestore.collection('users').document('${currentUser.uid}');
+        _firestore.collection(DBKeys.kUserCollectionID).document('${currentUser.uid}');
     DocumentSnapshot doc = await docRef.get();
     return doc.data;
   }
@@ -394,11 +395,11 @@ class DBManager {
     Query defaultQuery;
     if (tags != null) {
       defaultQuery = _firestore
-          .collection('rooms')
-          .where('tags', arrayContainsAny: tags)
+          .collection(DBKeys.kRoomCollectionID)
+          .where(DBKeys.kRoomTagsKey, arrayContainsAny: tags)
           .limit(20);
     } else {
-      defaultQuery = _firestore.collection('rooms').limit(20);
+      defaultQuery = _firestore.collection(DBKeys.kRoomCollectionID).limit(20);
     }
     if (startAt == null) {
       switch (sortingOption) {
@@ -418,13 +419,13 @@ class DBManager {
     } else {
       switch (sortingOption) {
         case SortingOption.Date:
-          defaultQuery = defaultQuery.orderBy('time').startAt(startAt);
+          defaultQuery = defaultQuery.orderBy(DBKeys.kRoomCreatedTimeKey).startAt(startAt);
           break;
         case SortingOption.Participatable:
-          defaultQuery = defaultQuery.orderBy('isfull').startAt(startAt);
+          defaultQuery = defaultQuery.orderBy(DBKeys.kRoomIsFullKey).startAt(startAt);
           break;
         case SortingOption.Likes:
-          defaultQuery = defaultQuery.orderBy('likes').startAt(startAt);
+          defaultQuery = defaultQuery.orderBy(DBKeys.kRoomLikesKey).startAt(startAt);
           break;
       }
     }

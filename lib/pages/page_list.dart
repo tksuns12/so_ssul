@@ -67,27 +67,26 @@ class _ListPageState extends State<ListPage> {
         controller: controller,
         slivers: <Widget>[
           SliverAppBar(
+            backgroundColor: Colors.white,
             floating: true,
             snap: true,
-            expandedHeight: 200,
+            expandedHeight: 60,
             flexibleSpace: FlexibleSpaceBar(
-              background: Column(
-                children: <Widget>[
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        SizedBox(
-                            height: 30,
-                            width: 300,
-                            child: TextField(
-                              keyboardType: TextInputType.text,
-                            )),
-                        IconButton(icon: Icon(Icons.search), onPressed: () {}),
-                      ],
+              background: Container(
+                margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(40),color: Color(0xFFb2ebf2),),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    IconButton(icon: Icon(Icons.search), onPressed: () {}),
+                    Flexible(
+                      child: TextField(
+                        keyboardType: TextInputType.text,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             actions: <Widget>[

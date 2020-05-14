@@ -95,7 +95,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           ],
         ),
         Visibility(
-          child: CircularProgressIndicator(),
+          child: Center(child: CircularProgressIndicator()),
           visible: isLoading,
         ),
       ],

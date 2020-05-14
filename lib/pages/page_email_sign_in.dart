@@ -100,7 +100,7 @@ class _EmailSignInState extends State<EmailSignIn> {
               ),
             ],
           ),
-          Visibility(child: CircularProgressIndicator(), visible: isLoading,),
+          Visibility(child: Center(child: CircularProgressIndicator()), visible: isLoading,),
         ],),
       ),
     );

@@ -26,7 +26,7 @@ class Authentication {
           if (currentUser != null) {
             var userInfo = await _dbManager.loadUserInfo(user: currentUser);
             if (userInfo == null) {
-              _dbManager.createUserInfo(currentUser: currentUser, context: context);
+              _dbManager.createNewUserInfo(currentUser: currentUser, context: context);
             } else {
               Navigator.of(context).pushAndRemoveUntil(mainRoute(currentUser), (route) => false);
             }
@@ -81,7 +81,7 @@ class Authentication {
       if (currentUser != null) {
         var userInfo = await _dbManager.loadUserInfo(user: currentUser);
         if (userInfo == null) {
-          _dbManager.createUserInfo(currentUser: currentUser, context: context);
+          _dbManager.createNewUserInfo(currentUser: currentUser, context: context);
         } else {
           Navigator.of(context).pushAndRemoveUntil(mainRoute(currentUser), (route) => false);
         }

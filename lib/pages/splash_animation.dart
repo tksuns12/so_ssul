@@ -62,7 +62,7 @@ class _SplashAnimation2State extends State<SplashAnimation2> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.purpleAccent,
+      color: Color(0xFF00bcd4),
       child: Center(
         child: Padding(
           padding: const EdgeInsets.only(left: 40),

@@ -6,7 +6,6 @@ import 'package:sossul/authentication.dart';
 import 'package:sossul/pages/page_sign_in.dart';
 import 'package:sossul/pages/routes.dart';
 import 'package:sossul/pages/splash_animation.dart';
-import '../main.dart';
 import 'package:sossul/database.dart';
 
 const kIsVirgin = "IsVirgin";
@@ -55,6 +54,6 @@ class _LaunchPageState extends State<LaunchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(color: Colors.lightBlueAccent);
+    return Container(color: Colors.lightBlueAccent, child: Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Colors.white),),),);
   }
 }
