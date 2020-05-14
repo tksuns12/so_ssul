@@ -19,6 +19,19 @@ class DBManager {
   Firestore _firestore = Firestore.instance;
   FirebaseStorage _storage = FirebaseStorage.instance;
 
+  Future<void> sendReport(
+      {@required time,
+      @required reportedUser,
+      @required reason,
+      @required content}) async {
+    await _firestore.collection(DBKeys.kReportsCollectionID).add({
+      DBKeys.kReportsCreatedTimeKey: FieldValue.serverTimestamp(),
+      DBKeys.kReportsReportedUserKey: reportedUser,
+      DBKeys.kReportsContentKey: content,
+      DBKeys.kReportsReasonKey: reason
+    });
+  }
+
   Future<void> onExecuteApp({@required FirebaseUser currentUser}) async {
     await _firestore
         .collection(DBKeys.kUserCollectionID)
@@ -40,7 +53,8 @@ class DBManager {
             .document(roomID)
             .setData({
           DBKeys.kRoomParticipantsIDKey: FieldValue.arrayUnion([currentUser]),
-          DBKeys.kRoomParticipantsNicknameKey: FieldValue.arrayUnion([_nickName]),
+          DBKeys.kRoomParticipantsNicknameKey:
+              FieldValue.arrayUnion([_nickName]),
           DBKeys.kRoomParticipantsNumberKey: FieldValue.increment(1),
         });
       }

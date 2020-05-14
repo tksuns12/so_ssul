@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sossul/authentication.dart';
+import 'package:sossul/constants.dart';
 import 'package:sossul/pages/page_sign_in.dart';
 import 'package:sossul/pages/routes.dart';
 import 'package:sossul/pages/splash_animation.dart';
@@ -40,8 +41,8 @@ class _LaunchPageState extends State<LaunchPage> {
       } else {
         _dbManager = DBManager();
         await _dbManager.onExecuteApp(currentUser: _currentUser);
-        Navigator.of(context).pushAndRemoveUntil(
-            mainRoute(_currentUser), (route) => false);
+        Navigator.of(context)
+            .pushAndRemoveUntil(mainRoute(_currentUser), (route) => false);
       }
     }
   }
@@ -54,6 +55,13 @@ class _LaunchPageState extends State<LaunchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(color: Colors.lightBlueAccent, child: Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Colors.white),),),);
+    return Container(
+      color: kMainColor,
+      child: Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation(Colors.white),
+        ),
+      ),
+    );
   }
 }

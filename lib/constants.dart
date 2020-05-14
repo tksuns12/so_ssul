@@ -44,4 +44,9 @@ class DBKeys {
   static const kCommentsLikesKey = 'likes';
   static const kLikedbyCollectionID = 'likedby';
   static const kLikedbyLikerKey = 'liker';
+  static const kReportsCollectionID = 'reports';
+  static const kReportsCreatedTimeKey = 'time';
+  static const kReportsReportedUserKey = 'reported_user';
+  static const kReportsReasonKey = 'resaon';
+  static const kReportsContentKey = 'content';
 }
