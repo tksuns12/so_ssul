@@ -16,7 +16,7 @@ class ListPage extends StatefulWidget {
 class _ListPageState extends State<ListPage> {
   DBManager _dbManager;
   ScrollController controller;
-  bool _isLoading=true;
+  bool _isLoading = true;
   bool _isEmpty = true;
   List<DocumentSnapshot> _data = List<DocumentSnapshot>();
   DocumentSnapshot _lastVisible;
@@ -38,27 +38,31 @@ class _ListPageState extends State<ListPage> {
           }
         }
       });
-    childSliver = _isEmpty ?
-    SliverToBoxAdapter(child: Container(alignment: Alignment.center,child: Text('올라온 글이 없습니다.'),))
-        :SliverList(
-      delegate: SliverChildBuilderDelegate(
-            (_, index) {
-          final DocumentSnapshot document = _data[index];
-          return ListItem(document: document,);
-        },
-        childCount: _data.length + 1,
-      ),
-    );
-    _getData(SortingOption.Date).whenComplete(() {print("getData Done!"
-    );});
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        CustomScrollView(
+    childSliver = _isEmpty
+        ? SliverToBoxAdapter(
+        child: Container(
+          alignment: Alignment.center,
+          child: Text('올라온 글이 없습니다.'),
+        ))
+        : SliverList(
+      delegate: SliverChildBuilderDelegate(
+            (_, index) {
+          final DocumentSnapshot document = _data[index];
+          return ListItem(
+            document: document,
+          );
+        },
+        childCount: _data.length,
+      ),
+    );
+    _getData(SortingOption.Date);
+    return Stack(children: <Widget>[
+      CustomScrollView(
         key: scrollViewKey,
         controller: controller,
         slivers: <Widget>[
@@ -93,31 +97,40 @@ class _ListPageState extends State<ListPage> {
           childSliver,
         ],
       ),
-        Visibility(child: Center(child: CircularProgressIndicator()), visible: _isLoading,),
-      ]
-    );
+      Visibility(
+        child: Center(child: CircularProgressIndicator()),
+        visible: _isLoading,
+      ),
+    ]);
   }
 
   Future<void> _getData(SortingOption sortingOption) async {
-    QuerySnapshot querySnapshot;
+    List<DocumentSnapshot> documentSnapshots;
     if (_lastVisible == null) {
-      querySnapshot = await _dbManager.loadNovelList(
-          currentUser: widget.currentUser, sortingOption: sortingOption);
+      await _dbManager
+          .loadNovelList(
+              currentUser: widget.currentUser, sortingOption: sortingOption)
+          .then((value) {
+        documentSnapshots = value;
+      });
     } else {
-      querySnapshot = await _dbManager.loadNovelList(
-          currentUser: widget.currentUser,
-          sortingOption: sortingOption,
-          startAt: _lastVisible[SortingOptions[sortingOption.index]]);
+      await _dbManager
+          .loadNovelList(
+              currentUser: widget.currentUser,
+              sortingOption: sortingOption,
+              startAt: _lastVisible[SortingOptions[sortingOption.index]])
+          .then((value) {
+        documentSnapshots = value;
+      });
     }
 
-    if (querySnapshot != null && querySnapshot.documents.length > 0) {
-      _lastVisible =
-          querySnapshot.documents[querySnapshot.documents.length - 1];
-        setState(() {
-          _isLoading = false;
-          _isEmpty = false;
-          _data.addAll(querySnapshot.documents);
-        });
+    if (documentSnapshots != null && documentSnapshots.length > 0) {
+      _lastVisible = documentSnapshots[documentSnapshots.length - 1];
+      setState(() {
+        _isLoading = false;
+        _isEmpty = false;
+        _data.addAll(documentSnapshots);
+      });
     } else {
       setState(() {
         _isLoading = false;

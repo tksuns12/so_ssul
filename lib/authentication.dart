@@ -24,7 +24,7 @@ class Authentication {
           await auth.signInWithCredential(credential);
           currentUser = await auth.currentUser();
           if (currentUser != null) {
-            var userInfo = await _dbManager.loadUserInfo(currentUser: currentUser);
+            var userInfo = await _dbManager.loadUserInfo(user: currentUser);
             if (userInfo == null) {
               _dbManager.createUserInfo(currentUser: currentUser, context: context);
             } else {
@@ -79,7 +79,7 @@ class Authentication {
       await auth.signInWithEmailAndPassword(email: email, password: password);
       currentUser = await auth.currentUser();
       if (currentUser != null) {
-        var userInfo = await _dbManager.loadUserInfo(currentUser: currentUser);
+        var userInfo = await _dbManager.loadUserInfo(user: currentUser);
         if (userInfo == null) {
           _dbManager.createUserInfo(currentUser: currentUser, context: context);
         } else {
