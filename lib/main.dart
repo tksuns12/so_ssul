@@ -1,11 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:sossul/authentication.dart';
 import 'package:sossul/constants.dart';
 import 'package:sossul/pages/page_home.dart';
 import 'package:sossul/pages/page_launch.dart';
 import 'package:sossul/pages/page_list.dart';
+import 'package:sossul/pages/page_profile.dart';
+import 'package:get_it/get_it.dart';
 
-void main() => runApp(MyApp());
+import 'database.dart';
+
+void main() {
+  setupSingletons();
+  runApp(MyApp());}
+
+  GetIt locator = GetIt.instance;
+
+void setupSingletons() async {
+  locator.registerLazySingleton(() => DBManager());
+  locator.registerLazySingleton(() => Authentication());
+}
 
 int _selectedPageIndex = 0;
 
@@ -42,8 +56,7 @@ class _MainState extends State<Main> {
         currentUser: widget.currentUser,
       ),
       Container(),
-      Container(),
-      Container(),
+      ProfilePage(currentUser: widget.currentUser,),
     ];
   }
 

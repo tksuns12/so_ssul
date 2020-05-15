@@ -13,7 +13,8 @@ class DBKeys {
   static const kUserEmailKey = 'email';
   static const kUserPointKey = 'point';
   static const kUserJoinDateKey = 'joindate';
-  static const kUserAchievementKey = 'achievment';
+  static const kUserAchievementKey = 'achievement';
+  static const kUserProfilePictureKey = 'profile_picture';
   static const kRoomTitleKey = 'title';
   static const kRoomCharacterLimitKey = 'charlimit';
   static const kRoomInitialSentenceKey = 'initsentence';

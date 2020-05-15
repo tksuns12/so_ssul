@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 import 'package:sossul/authentication.dart';
 import 'package:sossul/constants.dart';
 import 'package:sossul/pages/page_create_account.dart';
@@ -10,7 +11,7 @@ class EmailSignIn extends StatefulWidget {
 }
 
 class _EmailSignInState extends State<EmailSignIn> {
-  Authentication _authorization = Authentication();
+  Authentication _authentication = GetIt.I.get<Authentication>();
   String email;
   String password;
   bool isLoading = false;
@@ -97,7 +98,7 @@ class _EmailSignInState extends State<EmailSignIn> {
                                 setState(() {
                                   isLoading = true;
                                 });
-                                await _authorization
+                                await _authentication
                                     .signInEmail(
                                     context: context,
                                     email: email,
@@ -133,7 +134,7 @@ class _EmailSignInState extends State<EmailSignIn> {
                         setState(() {
                           isLoading = true;
                         });
-                        await _authorization
+                        await _authentication
                             .signInEmail(
                                 context: context,
                                 email: email,

@@ -1,3 +1,4 @@
+
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -434,7 +435,7 @@ class DBManager {
   Future<List<DocumentSnapshot>> loadNovelList(
       {@required FirebaseUser currentUser,
       List<String> tags,
-      dynamic startAt,
+      DocumentSnapshot startAfter,
       @required SortingOption sortingOption}) async {
     QuerySnapshot snapshot;
     Query defaultQuery;
@@ -446,11 +447,11 @@ class DBManager {
     } else {
       defaultQuery = _firestore.collection(DBKeys.kRoomCollectionID).limit(20);
     }
-    if (startAt == null) {
+    if (startAfter == null) {
       switch (sortingOption) {
         case SortingOption.Date:
           defaultQuery =
-              defaultQuery.orderBy(SortingOptions[sortingOption.index]);
+              defaultQuery.orderBy(SortingOptions[sortingOption.index], descending: true);
           break;
         case SortingOption.Participatable:
           defaultQuery =
@@ -458,22 +459,22 @@ class DBManager {
           break;
         case SortingOption.Likes:
           defaultQuery =
-              defaultQuery.orderBy(SortingOptions[sortingOption.index]);
+              defaultQuery.orderBy(SortingOptions[sortingOption.index], descending: true);
           break;
       }
     } else {
       switch (sortingOption) {
         case SortingOption.Date:
           defaultQuery =
-              defaultQuery.orderBy(DBKeys.kRoomCreatedTimeKey).startAt(startAt);
+              defaultQuery.orderBy(DBKeys.kRoomCreatedTimeKey, descending: true).startAfterDocument(startAfter);
           break;
         case SortingOption.Participatable:
           defaultQuery =
-              defaultQuery.orderBy(DBKeys.kRoomIsFullKey).startAt(startAt);
+              defaultQuery.orderBy(DBKeys.kRoomIsFullKey).startAfterDocument(startAfter);
           break;
         case SortingOption.Likes:
           defaultQuery =
-              defaultQuery.orderBy(DBKeys.kRoomLikesKey).startAt(startAt);
+              defaultQuery.orderBy(DBKeys.kRoomLikesKey, descending: true).startAfterDocument(startAfter);
           break;
       }
     }
@@ -481,17 +482,25 @@ class DBManager {
     return snapshot.documents;
   }
 
-  Future<String> setProfilePicture(File image) async {
+  Future<String> setProfilePicture(File image, FirebaseUser currentUser) async {
     StorageReference storageReference =
-        _storage.ref().child('profile_pictures');
+        _storage.ref().child('profile_pictures/${currentUser.uid}');
     StorageUploadTask uploadTask = storageReference.putFile(image);
     await uploadTask.onComplete;
     String url;
-    storageReference.getDownloadURL().then((fileURL) {
+    await storageReference.getDownloadURL().then((fileURL) {
       url = fileURL;
     });
+    await _firestore.collection(DBKeys.kUserCollectionID).document(currentUser.uid).updateData({DBKeys.kUserProfilePictureKey: url});
     return url;
   }
+  
+  Future<String> getProfilePicture(FirebaseUser currentUser) async {
+    Map userInfo = await loadUserInfo(user: currentUser);
+    String url = userInfo[DBKeys.kUserProfilePictureKey];
+    return url;
+  }
+  
 
   Future showNickNameDialog(
       {@required BuildContext context, @required FirebaseUser currentUser}) {

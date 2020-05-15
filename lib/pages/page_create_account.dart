@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:sossul/database.dart';
 
 import '../authentication.dart';
@@ -14,8 +15,8 @@ class CreateAccountPage extends StatefulWidget {
 class _CreateAccountPageState extends State<CreateAccountPage> {
   String email;
   String password;
-  Authentication _authorization = Authentication();
-  DBManager dbManager = DBManager();
+  Authentication _authorization = GetIt.I.get<Authentication>();
+  DBManager dbManager = GetIt.I.get<DBManager>();
   bool isLoading = false;
   _CreateAccountPageState();
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:sossul/authentication.dart';
 import 'package:sossul/constants.dart';
 import 'package:sossul/pages/page_email_sign_in.dart';
@@ -51,7 +52,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
     scale: 1.5,
   );
 
-  Authentication _authorization = Authentication();
+  Authentication _authentication = GetIt.I.get<Authentication>();
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +73,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
             scale: 1.5,
           );
         });
-        await _authorization.signInGoogle(context: context);
+        await _authentication.signInGoogle(context: context);
       },
       onTapCancel: () {
         setState(() {

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sossul/constants.dart';
 import 'package:sossul/pages/page_room.dart';
@@ -29,10 +30,10 @@ class _ListPageState extends State<ListPage> {
 
   @override
   void initState() {
-    _dbManager = DBManager();
+    _dbManager = GetIt.I.get<DBManager>();
     scrollController = ScrollController()
       ..addListener(() async {
-        if (!_isLoading) {
+        if (!_isLoading && _data.length > 10) {
           if (scrollController.position.pixels ==
               scrollController.position.maxScrollExtent) {
             setState(() {
@@ -43,6 +44,7 @@ class _ListPageState extends State<ListPage> {
         }
       });
     refreshController = RefreshController();
+    _getData(SortingOption.Date);
 
     super.initState();
   }
@@ -66,7 +68,6 @@ class _ListPageState extends State<ListPage> {
               childCount: _data.length,
             ),
           );
-    _getData(SortingOption.Date);
     return Material(
       color: kBottomNavigationItemColor,
       child: SmartRefresher(
@@ -78,7 +79,7 @@ class _ListPageState extends State<ListPage> {
         controller: refreshController,
         onRefresh: () async {
           _lastVisible = null;
-          _data.clear();
+          _data = [];
           await _getData(SortingOption.Date);
           refreshController.refreshCompleted();
         },
@@ -146,7 +147,7 @@ class _ListPageState extends State<ListPage> {
           .loadNovelList(
               currentUser: widget.currentUser,
               sortingOption: sortingOption,
-              startAt: _lastVisible[SortingOptions[sortingOption.index]])
+              startAfter: _lastVisible)
           .then((value) {
         documentSnapshots = value;
       });
@@ -162,7 +163,8 @@ class _ListPageState extends State<ListPage> {
     } else {
       setState(() {
         _isLoading = false;
-        _isEmpty = true;
+        if (_data.length == 0){
+        _isEmpty = true;}
       });
     }
   }
@@ -197,10 +199,10 @@ class _ListItemState extends State<ListItem> {
               ),
             ),
             SizedBox(width: 15,),
-            FlatButton(
-              onPressed: () {  },
-              child: Expanded(
-                flex: 3,
+            Expanded(
+              flex: 3,
+              child: FlatButton(
+                onPressed: () {  },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[

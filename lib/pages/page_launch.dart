@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sossul/authentication.dart';
 import 'package:sossul/constants.dart';
@@ -17,7 +18,7 @@ class LaunchPage extends StatefulWidget {
 }
 
 class _LaunchPageState extends State<LaunchPage> {
-  Authentication _authentication = Authentication();
+  Authentication _authentication = GetIt.I.get<Authentication>();
   DBManager _dbManager;
 
   Future startTime() async {
@@ -39,7 +40,7 @@ class _LaunchPageState extends State<LaunchPage> {
           ),
         );
       } else {
-        _dbManager = DBManager();
+        _dbManager = GetIt.I.get<DBManager>();
         await _dbManager.onExecuteApp(currentUser: _currentUser);
         Navigator.of(context)
             .pushAndRemoveUntil(mainRoute(_currentUser), (route) => false);
