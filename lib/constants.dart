@@ -30,6 +30,7 @@ class DBKeys {
   static const kRoomParticipantsIDKey = 'participantsID';
   static const kRoomParticipantsNicknameKey = 'participants_name';
   static const kRoomParticipantsNumberKey = 'participants_num';
+  static const kRoomRecentWriterKey = 'recentwriter';
   static const kRelayCollectionID = 'relays';
   static const kRelayAuthorID = 'authorID';
   static const kRelayAuthorNickname = 'author';

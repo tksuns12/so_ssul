@@ -104,7 +104,7 @@ class _MainState extends State<Main> {
             ? FloatingActionButton(
                 backgroundColor: Colors.white,
                 onPressed: () {},
-                child: Icon(FontAwesomeIcons.penNib, color: kMainColor,),
+                child: Icon(FontAwesomeIcons.penNib, color: kBottomNavigationItemColor,),
               )
             : null,
         appBar: _appBars[_selectedPageIndex],

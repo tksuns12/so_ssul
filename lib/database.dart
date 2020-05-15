@@ -147,6 +147,7 @@ class DBManager {
       DBKeys.kRoomEnjoyKey: enjoy,
       DBKeys.kRoomParticipantsNicknameKey: [_nickName],
       DBKeys.kRoomParticipantsNumberKey: 1,
+      DBKeys.kRoomRecentWriterKey: _nickName,
     });
   }
 

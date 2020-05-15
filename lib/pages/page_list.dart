@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sossul/constants.dart';
-import 'package:sossul/pages/page_work.dart';
+import 'package:sossul/pages/page_room.dart';
 
 import '../database.dart';
 
@@ -66,52 +67,67 @@ class _ListPageState extends State<ListPage> {
             ),
           );
     _getData(SortingOption.Date);
-    return SmartRefresher(
-      header: WaterDropMaterialHeader(backgroundColor: Colors.white, color: kMainColor,),
-      enablePullDown: true,
-      controller: refreshController,
-      onRefresh: () async {
-        _lastVisible = null;
-        _data.clear();
-        await _getData(SortingOption.Date);
-        refreshController.refreshCompleted();
-      },
-      child: CustomScrollView(
-        key: scrollViewKey,
-        controller: scrollController,
-        slivers: <Widget>[
-          SliverAppBar(
-            backgroundColor: Colors.white,
-            floating: true,
-            snap: true,
-            expandedHeight: 60,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(40),
-                  color: Color(0xFFb2ebf2),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    IconButton(icon: Icon(Icons.search), onPressed: () {}),
-                    Flexible(
-                      child: TextField(
-                        keyboardType: TextInputType.text,
+    return Material(
+      color: kBottomNavigationItemColor,
+      child: SmartRefresher(
+        header: WaterDropMaterialHeader(
+          backgroundColor: Colors.white,
+          color: kMainColor,
+        ),
+        enablePullDown: true,
+        controller: refreshController,
+        onRefresh: () async {
+          _lastVisible = null;
+          _data.clear();
+          await _getData(SortingOption.Date);
+          refreshController.refreshCompleted();
+        },
+        child: CustomScrollView(
+          key: scrollViewKey,
+          controller: scrollController,
+          slivers: <Widget>[
+            SliverAppBar(
+              backgroundColor: Colors.white,
+              floating: true,
+              snap: true,
+              expandedHeight: 60,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 7, horizontal: 8),
+                  child: TextField(
+                    textAlignVertical: TextAlignVertical.center,
+                    cursorWidth: 3,
+                    cursorColor: Color(0xFF797979),
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(0),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide:
+                            BorderSide(color: Color(0xFF797979), width: 3),
+                      ),
+                      focusColor: kBottomNavigationItemColor,
+                      prefixIcon: Icon(
+                        FontAwesomeIcons.search,
+                        color: Color(0xFF797979),
+                      ),
+                      hintStyle: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          color: Color(0xFF797979)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide:
+                            BorderSide(color: Color(0xFF797979), width: 10),
                       ),
                     ),
-                  ],
+                    keyboardType: TextInputType.text,
+                  ),
                 ),
               ),
             ),
-            actions: <Widget>[
-              IconButton(icon: Icon(Icons.search), onPressed: () {})
-            ],
-          ),
-          childSliver,
-        ],
+            childSliver,
+          ],
+        ),
       ),
     );
   }
@@ -161,76 +177,69 @@ class ListItem extends StatefulWidget {
 }
 
 class _ListItemState extends State<ListItem> {
-  bool isSelected = false;
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          isSelected = isSelected ? false : true;
-        });
-      },
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Material(
-          elevation: isSelected ? 15 : 10,
-          color: isSelected ? Colors.purpleAccent : Colors.white,
-          borderRadius: isSelected
-              ? BorderRadius.circular(20)
-              : BorderRadius.circular(30),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                '${widget.document.data['title']}',
-                style: TextStyle(
-                    fontSize: 30,
-                    color: isSelected ? Colors.white : Colors.black),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
+      child: Material(
+        elevation: 5,
+        borderRadius: BorderRadius.circular(3),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              flex: 1,
+              child: FlatButton(
+                onPressed: () {  },
+                child: Column(children: <Widget>[
+                  CircleAvatar(radius: 35,),
+                  Text('${widget.document.data[DBKeys.kRoomAuthorNicknameKey]}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),),
+                ],),
               ),
-              Text(
-                '${widget.document.data['tags']}',
-                style:
-                    TextStyle(color: isSelected ? Colors.white : Colors.black),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            ),
+            SizedBox(width: 15,),
+            FlatButton(
+              onPressed: () {  },
+              child: Expanded(
+                flex: 3,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Container(
-                      child: Text(
-                        '${widget.document.data['participants']}/${widget.document.data['partlimit']}',
-                        style: TextStyle(
-                            color: isSelected ? Colors.white : Colors.black),
-                      ),
-                    ),
-                    FlatButton(
-                      onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return WorkPage();
-                        }));
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Icon(Icons.add),
-                          Text(
-                            '참여하기',
-                            style: TextStyle(
-                                color:
-                                    isSelected ? Colors.white : Colors.black),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
+                  Text('${widget.document.data[DBKeys.kRoomTitleKey]}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text(generateTags(widget.document.data[DBKeys.kRoomTagsKey]), style: TextStyle(color: Color(0xFFCECECE)),),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: <Widget>[
+                      Row(children: <Widget>[Padding(
+                        padding: const EdgeInsets.only(right: 15),
+                        child: Icon(FontAwesomeIcons.users),
+                      ), Text('${widget.document.data[DBKeys.kRoomParticipantsNumberKey]}/${widget.document.data[DBKeys.kRoomParticipantLimitKey]}')]),
+                      Row(children: <Widget>[Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: Icon(FontAwesomeIcons.solidHeart, color: Colors.redAccent,),
+                      ), Text('${widget.document.data[DBKeys.kRoomLikesKey]}')],),
+                      Row(children: <Widget>[Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: Icon(FontAwesomeIcons.eye),
+                      ), Text('${widget.document.data[DBKeys.kRoomVisitKey]}')],),
+                    ],),
+                  )
+                ],),
+              ),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  String generateTags(List<dynamic> tags) {
+    String result = '';
+    for (String tag in tags) {
+      result += '#$tag ';
+    }
+    return result;
   }
 }
