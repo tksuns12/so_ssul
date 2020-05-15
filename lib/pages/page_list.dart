@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:sossul/constants.dart';
 import 'package:sossul/pages/page_work.dart';
 
 import '../database.dart';
@@ -15,29 +17,32 @@ class ListPage extends StatefulWidget {
 
 class _ListPageState extends State<ListPage> {
   DBManager _dbManager;
-  ScrollController controller;
+  ScrollController scrollController;
   bool _isLoading = true;
   bool _isEmpty = true;
   List<DocumentSnapshot> _data = List<DocumentSnapshot>();
   DocumentSnapshot _lastVisible;
   final scrollViewKey = GlobalKey<ScrollableState>();
   Widget childSliver;
+  RefreshController refreshController;
 
   @override
   void initState() {
     _dbManager = DBManager();
-    controller = ScrollController()
-      ..addListener(() {
+    scrollController = ScrollController()
+      ..addListener(() async {
         if (!_isLoading) {
-          if (controller.position.pixels ==
-              controller.position.maxScrollExtent) {
+          if (scrollController.position.pixels ==
+              scrollController.position.maxScrollExtent) {
             setState(() {
               _isLoading = true;
             });
-            _getData(SortingOption.Date);
+            await _getData(SortingOption.Date);
           }
         }
       });
+    refreshController = RefreshController();
+
     super.initState();
   }
 
@@ -45,26 +50,35 @@ class _ListPageState extends State<ListPage> {
   Widget build(BuildContext context) {
     childSliver = _isEmpty
         ? SliverToBoxAdapter(
-        child: Container(
-          alignment: Alignment.center,
-          child: Text('올라온 글이 없습니다.'),
-        ))
+            child: Container(
+            alignment: Alignment.center,
+            child: Text('올라온 글이 없습니다.'),
+          ))
         : SliverList(
-      delegate: SliverChildBuilderDelegate(
-            (_, index) {
-          final DocumentSnapshot document = _data[index];
-          return ListItem(
-            document: document,
+            delegate: SliverChildBuilderDelegate(
+              (_, index) {
+                final DocumentSnapshot document = _data[index];
+                return ListItem(
+                  document: document,
+                );
+              },
+              childCount: _data.length,
+            ),
           );
-        },
-        childCount: _data.length,
-      ),
-    );
     _getData(SortingOption.Date);
-    return Stack(children: <Widget>[
-      CustomScrollView(
+    return SmartRefresher(
+      header: WaterDropMaterialHeader(backgroundColor: Colors.white, color: kMainColor,),
+      enablePullDown: true,
+      controller: refreshController,
+      onRefresh: () async {
+        _lastVisible = null;
+        _data.clear();
+        await _getData(SortingOption.Date);
+        refreshController.refreshCompleted();
+      },
+      child: CustomScrollView(
         key: scrollViewKey,
-        controller: controller,
+        controller: scrollController,
         slivers: <Widget>[
           SliverAppBar(
             backgroundColor: Colors.white,
@@ -74,7 +88,10 @@ class _ListPageState extends State<ListPage> {
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(40),color: Color(0xFFb2ebf2),),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(40),
+                  color: Color(0xFFb2ebf2),
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -96,11 +113,7 @@ class _ListPageState extends State<ListPage> {
           childSliver,
         ],
       ),
-      Visibility(
-        child: Center(child: CircularProgressIndicator()),
-        visible: _isLoading,
-      ),
-    ]);
+    );
   }
 
   Future<void> _getData(SortingOption sortingOption) async {

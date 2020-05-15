@@ -10,13 +10,12 @@ void main() => runApp(MyApp());
 int _selectedPageIndex = 0;
 
 class MyApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
-      return MaterialApp(
-        home: LaunchPage(),
-      );
-    }
+    return MaterialApp(
+      home: LaunchPage(),
+    );
+  }
 }
 
 class Main extends StatefulWidget {
@@ -35,45 +34,80 @@ class _MainState extends State<Main> {
   void initState() {
     super.initState();
     _bodyWidgets = <Widget>[
-      HomeBody(changeMainState: setSelectedPage, currentUser: widget.currentUser,),
-      ListPage(currentUser: widget.currentUser,),
+      HomeBody(
+        changeMainState: setSelectedPage,
+        currentUser: widget.currentUser,
+      ),
+      ListPage(
+        currentUser: widget.currentUser,
+      ),
       Container(),
       Container(),
       Container(),
     ];
-
   }
 
   @override
   Widget build(BuildContext context) {
     _appBars = <AppBar>[
       AppBar(
-        bottom: PreferredSize(child: Divider(color: kMainColor, height: 0,), preferredSize: Size.fromHeight(4.0)),
+        bottom: PreferredSize(
+            child: Divider(
+              color: kMainColor,
+              height: 0,
+            ),
+            preferredSize: Size.fromHeight(4.0)),
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.white,
-        title: Text('[So. SSul]', style: TextStyle(color: kMainColor),),),
+        title: Text(
+          '[So. SSul]',
+          style: TextStyle(color: kMainColor),
+        ),
+      ),
       null,
       AppBar(
-        bottom: PreferredSize(child: Divider(color: kMainColor, height: 0,), preferredSize: Size.fromHeight(4.0)),
+        bottom: PreferredSize(
+            child: Divider(
+              color: kMainColor,
+              height: 0,
+            ),
+            preferredSize: Size.fromHeight(4.0)),
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.white,
-        title: Text('[So. SSul]', style: TextStyle(color: kMainColor),),),
+        title: Text(
+          '[So. SSul]',
+          style: TextStyle(color: kMainColor),
+        ),
+      ),
       AppBar(
-        bottom: PreferredSize(child: Divider(color: kMainColor, height: 0,), preferredSize: Size.fromHeight(4.0)),
+        bottom: PreferredSize(
+            child: Divider(
+              color: kMainColor,
+              height: 0,
+            ),
+            preferredSize: Size.fromHeight(4.0)),
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.white,
-        title: Text('[So. SSul]', style: TextStyle(color: kMainColor),),),
-
+        title: Text(
+          '[So. SSul]',
+          style: TextStyle(color: kMainColor),
+        ),
+      ),
     ];
     return MaterialApp(
       home: Scaffold(
         backgroundColor: Colors.white,
-        floatingActionButton: _selectedPageIndex==1?FloatingActionButton(onPressed: () {}, child: Icon(Icons.add),):null,
+        floatingActionButton: _selectedPageIndex == 1
+            ? FloatingActionButton(
+                backgroundColor: Colors.white,
+                onPressed: () {},
+                child: Icon(FontAwesomeIcons.penNib, color: kMainColor,),
+              )
+            : null,
         appBar: _appBars[_selectedPageIndex],
-
         body: IndexedStack(
           index: _selectedPageIndex,
           children: _bodyWidgets,
@@ -86,13 +120,21 @@ class _MainState extends State<Main> {
           unselectedItemColor: Colors.grey,
           selectedItemColor: kBottomNavigationItemColor,
           items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(FontAwesomeIcons.home, size: 40,), title: Text('홈')),
             BottomNavigationBarItem(
-                icon: Icon(FontAwesomeIcons.bookOpen, size: 40), title: Text('전체 목록')),
+                icon: Icon(
+                  FontAwesomeIcons.home,
+                  size: 40,
+                ),
+                title: Text('홈')),
             BottomNavigationBarItem(
-                icon: Icon(FontAwesomeIcons.trophy, size: 40), title: Text('리더 보드')),
+                icon: Icon(FontAwesomeIcons.bookOpen, size: 40),
+                title: Text('전체 목록')),
             BottomNavigationBarItem(
-                icon: Icon(FontAwesomeIcons.userCog, size: 40), title: Text('마이 페이지')),
+                icon: Icon(FontAwesomeIcons.trophy, size: 40),
+                title: Text('리더 보드')),
+            BottomNavigationBarItem(
+                icon: Icon(FontAwesomeIcons.userCog, size: 40),
+                title: Text('마이 페이지')),
           ],
           currentIndex: _selectedPageIndex,
           onTap: (int index) {
@@ -104,10 +146,10 @@ class _MainState extends State<Main> {
       ),
     );
   }
+
   void setSelectedPage(int index) {
     setState(() {
       _selectedPageIndex = index;
     });
   }
-
 }

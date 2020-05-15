@@ -64,10 +64,30 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     SizedBox(
                       width: 250,
                       child: TextField(
+                        textInputAction: TextInputAction.done,
                         maxLength: 12,
                         obscureText: true,
                         onChanged: (text) {
                           password = text;
+                        },
+                        onSubmitted: (text) async {
+
+                          setState(() {
+                            isLoading = true;
+                          });
+                          await _authorization
+                              .createEmailAccount(
+                              context: context,
+                              email: email.trim(),
+                              password: password)
+                              .then((value) async {
+                            FirebaseUser _currentUser =
+                            await _authorization.auth.currentUser();
+                            setState(() {
+                              isLoading = false;
+                            });
+                            setNickNameDialog(context, _currentUser);
+                          });
                         },
                       ),
                     ),

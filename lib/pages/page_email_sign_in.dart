@@ -86,10 +86,28 @@ class _EmailSignInState extends State<EmailSignIn> {
                         SizedBox(
                           width: 250,
                           child: TextFormField(
+                            textInputAction: TextInputAction.done,
                             keyboardType: TextInputType.text,
                             obscureText: true,
                             onChanged: (text) {
                               password = text;
+                            },
+                            onFieldSubmitted: (text) async {
+                              if (_formKey.currentState.validate()) {
+                                setState(() {
+                                  isLoading = true;
+                                });
+                                await _authorization
+                                    .signInEmail(
+                                    context: context,
+                                    email: email,
+                                    password: password)
+                                    .then((value) {
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                                });
+                              }
                             },
                             validator: (value) {
                               if (value == null) {
