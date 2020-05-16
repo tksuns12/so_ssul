@@ -87,13 +87,26 @@ class DBManager {
     showNickNameDialog(context: context, currentUser: currentUser);
   }
 
-  Stream loadUserInfo({@required FirebaseUser user}) {
-    Stream data = _firestore
+  Stream<DocumentSnapshot> loadUserInfoStream({@required FirebaseUser user}) {
+    Stream<DocumentSnapshot> data = _firestore
         .collection(DBKeys.kUserCollectionID)
         .document('${user.uid}').snapshots();
-    print(data);
     return data;
   }
+
+  Future<Map> loadUserInfoSnapshot({@required FirebaseUser user}) async {
+    Map data;
+    await _firestore
+        .collection("users")
+        .document('${user.uid}')
+        .get()
+        .then((DocumentSnapshot ds) {
+      data = ds.data;
+    });
+    return data;
+  }
+
+
 
   Future<bool> nickNameAlreadyUsed({@required String nickName}) async {
     var data = await _firestore
@@ -491,11 +504,14 @@ class DBManager {
     return url;
   }
   
-//  Future<String> getProfilePicture(FirebaseUser currentUser) async {
-//    DocumentSnapshot userInfoSnapshot = await loadUserInfo(user: currentUser);
-//    String url = userInfoSnapshot[DBKeys.kUserProfilePictureKey];
-//    return url;
-//  }
+  Future<String> getProfilePicture(String userid) async {
+    DocumentSnapshot userInfoSnapshot;
+    await _firestore.collection(DBKeys.kUserCollectionID).document('${userid}').get().then((value){
+      userInfoSnapshot = value;
+    });
+    String url = userInfoSnapshot[DBKeys.kUserProfilePictureKey];
+    return url;
+  }
   
 
   Future showNickNameDialog(

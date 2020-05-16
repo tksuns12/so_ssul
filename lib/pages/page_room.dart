@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 class RoomPage extends StatelessWidget {
+  final roomID;
+  const RoomPage({Key key,@required this.roomID}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'So. SSul',
+          '글쓰기 방',
           textAlign: TextAlign.center,
         ),
       ),

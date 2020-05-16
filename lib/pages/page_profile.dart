@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -39,7 +40,7 @@ class ProfilePicture extends StatefulWidget {
 class _ProfilePictureState extends State<ProfilePicture> {
   DBManager _dbManager = GetIt.I.get<DBManager>();
   Map userInfo;
-  var _profilePicture;
+  String imageUrl;
   File _imageFile;
 
   @override
@@ -51,32 +52,31 @@ class _ProfilePictureState extends State<ProfilePicture> {
   Widget build(BuildContext context) {
 //    _loadPictureFromServer();
     return StreamBuilder(
-        stream: _dbManager.loadUserInfo(user: widget.currentUser),
+        stream: _dbManager.loadUserInfoStream(user: widget.currentUser),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            String url =
+            imageUrl =
                 snapshot.data[DBKeys.kUserProfilePictureKey];
-            _profilePicture = NetworkImage(url);
-          }
-          return FlatButton(
-              onPressed: () async {
+            return CircularProfileAvatar(imageUrl,
+              backgroundColor: kMainColor,
+              initialsText: Text('.'),
+              radius: 30,
+              onTap: () async {
                 await _pickImage();
                 await _cropImage();
                 await _dbManager.setProfilePicture(
                     _imageFile, widget.currentUser);
-                setState(() {
-                });
               },
-              child: CircleAvatar(
-                radius: 30,
-                backgroundImage: _profilePicture != null
-                    ? _profilePicture
-                    : AssetImage('assets/images/default_profile.png'),
-                backgroundColor: Colors.transparent,
-              ));
+              cacheImage: true,
+              elevation: 1.0,
+              borderColor: kMainColor,
+              borderWidth: 1,);
+          } else {
+            return CircleAvatar(radius: 30, backgroundColor: kMainColor,);
+          }
         });
   }
-  
+
   _pickImage() async {
     _imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
   }
