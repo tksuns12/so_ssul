@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sossul/authentication.dart';
 import 'package:sossul/constants.dart';
@@ -43,6 +44,7 @@ class Main extends StatefulWidget {
 class _MainState extends State<Main> {
   List<Widget> _bodyWidgets;
   List<AppBar> _appBars;
+  DateTime backButtonOnPressedTime;
 
   @override
   void initState() {
@@ -121,9 +123,21 @@ class _MainState extends State<Main> {
               )
             : null,
         appBar: _appBars[_selectedPageIndex],
-        body: IndexedStack(
-          index: _selectedPageIndex,
-          children: _bodyWidgets,
+        body: WillPopScope(
+          onWillPop: () async {
+            DateTime currentTime = DateTime.now();
+            bool backButton = backButtonOnPressedTime == null || currentTime.difference(backButtonOnPressedTime) > Duration(seconds: 2);
+
+            if (backButton) {
+              backButtonOnPressedTime = currentTime;
+              Fluttertoast.showToast(msg: '종료하려면 한 번 더 누르세요.', backgroundColor: kBottomNavigationItemColor, textColor: Colors.white, toastLength: Toast.LENGTH_SHORT);
+              return false;
+            } return true;
+          },
+          child: IndexedStack(
+            index: _selectedPageIndex,
+            children: _bodyWidgets,
+          ),
         ),
         bottomNavigationBar: BottomNavigationBar(
           backgroundColor: Colors.white,
