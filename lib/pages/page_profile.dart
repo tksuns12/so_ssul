@@ -2,11 +2,17 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sossul/constants.dart';
 import 'package:sossul/database.dart';
+import 'package:image_cropper/image_cropper.dart';
+
+enum AppState {
+  free,
+  picked,
+  cropped,
+}
 
 class ProfilePage extends StatelessWidget {
   final FirebaseUser currentUser;
@@ -15,7 +21,10 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(child: ProfilePicture(currentUser: currentUser,));
+    return Container(
+        child: ProfilePicture(
+      currentUser: currentUser,
+    ));
   }
 }
 
@@ -30,31 +39,58 @@ class ProfilePicture extends StatefulWidget {
 class _ProfilePictureState extends State<ProfilePicture> {
   DBManager _dbManager = GetIt.I.get<DBManager>();
   Map userInfo;
-  var profile;
+  var _profilePicture;
+  File _imageFile;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    _getPicture();
-
-    return FlatButton(onPressed: () async {
-      await ImagePicker.pickImage(source: ImageSource.gallery).then((picture) {
-        _dbManager.setProfilePicture(picture, widget.currentUser);
-        setState(() {
-          _getPicture();
+//    _loadPictureFromServer();
+    return StreamBuilder(
+        stream: _dbManager.loadUserInfo(user: widget.currentUser),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            String url =
+                snapshot.data[DBKeys.kUserProfilePictureKey];
+            _profilePicture = NetworkImage(url);
+          }
+          return FlatButton(
+              onPressed: () async {
+                await _pickImage();
+                await _cropImage();
+                await _dbManager.setProfilePicture(
+                    _imageFile, widget.currentUser);
+                setState(() {
+                });
+              },
+              child: CircleAvatar(
+                radius: 30,
+                backgroundImage: _profilePicture != null
+                    ? _profilePicture
+                    : AssetImage('assets/images/default_profile.png'),
+                backgroundColor: Colors.transparent,
+              ));
         });
-      });
-    },
-        child: CircleAvatar(radius: 30, backgroundImage: profile, backgroundColor: kMainColor,)
-    );
+  }
+  
+  _pickImage() async {
+    _imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
   }
 
-  Future<void> _getPicture() async {
-    await _dbManager.getProfilePicture(widget.currentUser).then((url) {
-      if (url != null){
-      profile = NetworkImage(url);}
-      else {
-        profile = NetworkImage('https://firebasestorage.googleapis.com/v0/b/so-ssul.appspot.com/o/pngfuel.com.png?alt=media&token=317e88bf-bc0f-4644-8da9-07660ae93735');
-      }
-    });
+  _cropImage() async {
+    File croppedFile = await ImageCropper.cropImage(
+        sourcePath: _imageFile.path,
+        aspectRatioPresets: [CropAspectRatioPreset.square],
+        cropStyle: CropStyle.rectangle,
+        compressFormat: ImageCompressFormat.jpg,
+        compressQuality: 50);
+
+    if (croppedFile != null) {
+        _imageFile = croppedFile;
+    }
   }
 }

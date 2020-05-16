@@ -5,7 +5,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sossul/constants.dart';
-import 'package:sossul/pages/page_room.dart';
 
 import '../database.dart';
 

@@ -87,15 +87,11 @@ class DBManager {
     showNickNameDialog(context: context, currentUser: currentUser);
   }
 
-  Future<Map> loadUserInfo({@required FirebaseUser user}) async {
-    Map data;
-    await _firestore
+  Stream loadUserInfo({@required FirebaseUser user}) {
+    Stream data = _firestore
         .collection(DBKeys.kUserCollectionID)
-        .document('${user.uid}')
-        .get()
-        .then((DocumentSnapshot ds) {
-      data = ds.data;
-    });
+        .document('${user.uid}').snapshots();
+    print(data);
     return data;
   }
 
@@ -495,11 +491,11 @@ class DBManager {
     return url;
   }
   
-  Future<String> getProfilePicture(FirebaseUser currentUser) async {
-    Map userInfo = await loadUserInfo(user: currentUser);
-    String url = userInfo[DBKeys.kUserProfilePictureKey];
-    return url;
-  }
+//  Future<String> getProfilePicture(FirebaseUser currentUser) async {
+//    DocumentSnapshot userInfoSnapshot = await loadUserInfo(user: currentUser);
+//    String url = userInfoSnapshot[DBKeys.kUserProfilePictureKey];
+//    return url;
+//  }
   
 
   Future showNickNameDialog(
