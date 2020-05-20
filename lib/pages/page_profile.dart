@@ -55,24 +55,49 @@ class _ProfilePictureState extends State<ProfilePicture> {
         stream: _dbManager.loadUserInfoStream(user: widget.currentUser),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            imageUrl =
-                snapshot.data[DBKeys.kUserProfilePictureKey];
-            return CircularProfileAvatar(imageUrl,
-              backgroundColor: kMainColor,
-              initialsText: Text('.'),
-              radius: 30,
-              onTap: () async {
+            imageUrl = snapshot.data[DBKeys.kUserProfilePictureKey];
+            if (imageUrl != null) {
+              return CircularProfileAvatar(
+                imageUrl,
+                backgroundColor: kMainColor,
+                initialsText: Text('.'),
+                radius: 30,
+                onTap: () async {
+                  await _pickImage();
+                  await _cropImage();
+                  await _dbManager.setProfilePicture(
+                      _imageFile, widget.currentUser);
+                },
+                cacheImage: true,
+                elevation: 1.0,
+                borderColor: kMainColor,
+                borderWidth: 1,
+              );
+            } else {
+              return FlatButton(
+                onPressed: () async {
+                  await _pickImage();
+                  await _cropImage();
+                  await _dbManager.setProfilePicture(
+                      _imageFile, widget.currentUser); },
+                child: CircleAvatar(
+                  radius: 30,
+                  backgroundColor: kMainColor,
+                ),
+              );
+            }
+          } else {
+            return FlatButton(
+              onPressed: () async {
                 await _pickImage();
                 await _cropImage();
                 await _dbManager.setProfilePicture(
-                    _imageFile, widget.currentUser);
-              },
-              cacheImage: true,
-              elevation: 1.0,
-              borderColor: kMainColor,
-              borderWidth: 1,);
-          } else {
-            return CircleAvatar(radius: 30, backgroundColor: kMainColor,);
+                    _imageFile, widget.currentUser); },
+              child: CircleAvatar(
+                radius: 30,
+                backgroundColor: kMainColor,
+              ),
+            );
           }
         });
   }
