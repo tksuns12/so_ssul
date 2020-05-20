@@ -95,21 +95,4 @@ class _ProfilePictureState extends State<ProfilePicture> {
           }
         });
   }
-
-  _pickImage() async {
-    _imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
-  }
-
-  _cropImage() async {
-    File croppedFile = await ImageCropper.cropImage(
-        sourcePath: _imageFile.path,
-        aspectRatioPresets: [CropAspectRatioPreset.square],
-        cropStyle: CropStyle.rectangle,
-        compressFormat: ImageCompressFormat.jpg,
-        compressQuality: 50);
-
-    if (croppedFile != null) {
-      _imageFile = croppedFile;
-    }
-  }
 }

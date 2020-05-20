@@ -40,3 +40,9 @@ class RefreshRoomAction {}
 class SignInWithEmailAction {}
 
 class SignInWithGoogleAction {}
+
+class SetProfilePictureAction{
+  final String url;
+
+  SetProfilePictureAction(this.url);
+}
