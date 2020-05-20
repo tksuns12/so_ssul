@@ -4,6 +4,8 @@ const kInitialPoint = 1000;
 const kMainColor = Color(0xFF00bcd4);
 const kBottomNavigationItemColor = Color(0xFFb2ebf2);
 
+enum AppBody{Home, List, LeaderBoard, Settings}
+
 class DBKeys {
   static const kUserCollectionID = 'users';
   static const kRoomCollectionID = 'rooms';

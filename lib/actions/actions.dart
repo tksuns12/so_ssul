@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sossul/models/room_model.dart';
+import 'package:sossul/constants.dart';
 
-class AppInitializeAction {}
-
-class CheckInitializedAction {
+class AppInitializeAction {
   final bool isInitialized;
+  final FirebaseUser currentUser;
 
-  CheckInitializedAction(this.isInitialized);
+  AppInitializeAction({this.isInitialized, this.currentUser});
 }
 
 class UpdateProfilePictureAction {
@@ -45,4 +46,15 @@ class SetProfilePictureAction{
   final String url;
 
   SetProfilePictureAction(this.url);
+}
+
+class SetRoomInfo{
+  
+
+}
+class GoToAnotherBody{
+  final AppBody appBody;
+
+  GoToAnotherBody(this.appBody);
+
 }
