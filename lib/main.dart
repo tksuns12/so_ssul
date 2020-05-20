@@ -1,21 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:redux/redux.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 import 'package:sossul/authentication.dart';
 import 'package:sossul/constants.dart';
 import 'package:sossul/pages/page_home.dart';
 import 'package:sossul/pages/page_launch.dart';
 import 'package:sossul/pages/page_list.dart';
-import 'package:sossul/pages/page_profile.dart';
 import 'package:get_it/get_it.dart';
+import 'package:sossul/pages/page_room_making/page_room_making.dart';
+import 'package:sossul/reducers/reducers.dart';
+import 'package:sossul/store/app_state.dart';
 
 import 'database.dart';
 
 void main() {
-  setupSingletons();
-  runApp(MyApp());}
+  final store = Store<AppState>(
+    appReducer,
+    initialState: AppState.initial(),
+    middleware: [thunkMiddleware]
+  );
 
-  GetIt locator = GetIt.instance;
+  setupSingletons();
+  runApp(MyApp());
+}
+
+GetIt locator = GetIt.instance;
 
 void setupSingletons() async {
   locator.registerLazySingleton(() => DBManager());
@@ -58,7 +69,9 @@ class _MainState extends State<Main> {
         currentUser: widget.currentUser,
       ),
       Container(),
-      ProfilePage(currentUser: widget.currentUser,),
+      ProfilePage(
+        currentUser: widget.currentUser,
+      ),
     ];
   }
 
@@ -118,21 +131,36 @@ class _MainState extends State<Main> {
         floatingActionButton: _selectedPageIndex == 1
             ? FloatingActionButton(
                 backgroundColor: Colors.white,
-                onPressed: () {},
-                child: Icon(FontAwesomeIcons.penNib, color: kBottomNavigationItemColor,),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => RoomMakingPage()));
+                },
+                child: Icon(
+                  FontAwesomeIcons.penNib,
+                  color: kBottomNavigationItemColor,
+                ),
               )
             : null,
         appBar: _appBars[_selectedPageIndex],
         body: WillPopScope(
           onWillPop: () async {
             DateTime currentTime = DateTime.now();
-            bool backButton = backButtonOnPressedTime == null || currentTime.difference(backButtonOnPressedTime) > Duration(seconds: 2);
+            bool backButton = backButtonOnPressedTime == null ||
+                currentTime.difference(backButtonOnPressedTime) >
+                    Duration(seconds: 2);
 
             if (backButton) {
               backButtonOnPressedTime = currentTime;
-              Fluttertoast.showToast(msg: '종료하려면 한 번 더 누르세요.', backgroundColor: kBottomNavigationItemColor, textColor: Colors.white, toastLength: Toast.LENGTH_SHORT);
+              Fluttertoast.showToast(
+                  msg: '종료하려면 한 번 더 누르세요.',
+                  backgroundColor: kBottomNavigationItemColor,
+                  textColor: Colors.white,
+                  toastLength: Toast.LENGTH_SHORT);
               return false;
-            } return true;
+            }
+            return true;
           },
           child: IndexedStack(
             index: _selectedPageIndex,
