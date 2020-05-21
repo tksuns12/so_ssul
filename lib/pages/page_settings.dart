@@ -1,13 +1,10 @@
 import 'dart:io';
 
 import 'package:circular_profile_avatar/circular_profile_avatar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:sossul/constants.dart';
 import 'package:sossul/database.dart';
-import 'package:image_cropper/image_cropper.dart';
 
 class SettingsPage extends StatelessWidget {
 
@@ -47,7 +44,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
             if (imageUrl != null) {
               return CircularProfileAvatar(
                 imageUrl,
-                backgroundColor: kMainColor,
+                backgroundColor: kDarkPrimaryColor,
                 initialsText: Text('.'),
                 radius: 30,
                 onTap: () async {
@@ -58,7 +55,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                 },
                 cacheImage: true,
                 elevation: 1.0,
-                borderColor: kMainColor,
+                borderColor: kDarkPrimaryColor,
                 borderWidth: 1,
               );
             } else {
@@ -70,7 +67,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                       _imageFile, widget.currentUser); },
                               child: CircleAvatar(
                 radius: 30,
-                backgroundColor: kMainColor,
+                backgroundColor: kDarkPrimaryColor,
             ),
               );
             }
@@ -83,7 +80,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                       _imageFile, widget.currentUser); },
                               child: CircleAvatar(
                 radius: 30,
-                backgroundColor: kMainColor,
+                backgroundColor: kDarkPrimaryColor,
             ),
               );
           }

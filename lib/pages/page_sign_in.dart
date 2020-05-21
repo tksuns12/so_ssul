@@ -8,12 +8,12 @@ class SignInPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: kMainColor,
+      color: kDarkPrimaryColor,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Hero(tag: 'appname',
-          child: Material(color: kMainColor,child: Text('So.SSul', style: TextStyle(fontSize: 60, color: Colors.white),))),
+          child: Material(color: kDarkPrimaryColor,child: Text('So.SSul', style: TextStyle(fontSize: 60, color: Colors.white),))),
           SizedBox(height: 80,),
           FlatButton(
             child: Container(

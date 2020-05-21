@@ -23,7 +23,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: kMainColor,
+      color: kDarkPrimaryColor,
         child: Stack(
       children: <Widget>[
         Column(
@@ -32,7 +32,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
             Hero(
                 tag: 'appname',
                 child: Material(
-                    color: kMainColor,
+                    color: kDarkPrimaryColor,
                     child: Text(
                       'So.SSul',
                       style: TextStyle(fontSize: 50, color: Colors.white),

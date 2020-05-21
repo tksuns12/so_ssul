@@ -1,18 +1,22 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sossul/actions/actions.dart';
 import 'package:sossul/authentication.dart';
 import 'package:sossul/constants.dart';
-import 'package:sossul/pages/page_home.dart';
 import 'package:sossul/pages/page_launch.dart';
-import 'package:sossul/pages/page_list.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sossul/pages/page_room_making/page_room_making.dart';
 import 'package:sossul/reducers/reducers.dart';
+import 'package:sossul/routes.dart';
 import 'package:sossul/store/app_state.dart';
 
+import 'appBodies/appBodies.dart';
 import 'database.dart';
 
 void main() {
@@ -30,16 +34,11 @@ void setupSingletons() async {
   locator.registerLazySingleton(() => Authentication());
 }
 
-int _selectedPageIndex = 0;
-
 class MyApp extends StatelessWidget {
   final Authentication _authentication = GetIt.I.get<Authentication>();
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      routes: Routes.getRoutes(),
-      home: LaunchPage(),
     return StoreConnector<AppState, bool>(
       onInit: (store) async {
         SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -50,6 +49,7 @@ class MyApp extends StatelessWidget {
       },
       builder: (context, isInitialized) {
         return MaterialApp(
+          routes: Routes.getRoutes(),
           home: isInitialized ? LaunchPage() : Main(),
         );
       },
@@ -64,84 +64,23 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
-  List<Widget> _bodyWidgets;
-  List<AppBar> _appBars;
   DateTime backButtonOnPressedTime;
 
   @override
-  void initState() {
-    super.initState();
-    _bodyWidgets = <Widget>[
-      HomeBody(),
-      ListPage(),
-      Container(),
-      SettingsPage(),
-    ];
-  }
-
-  @override
   Widget build(BuildContext context) {
-    _appBars = <AppBar>[
-      AppBar(
-        bottom: PreferredSize(
-            child: Divider(
-              color: kMainColor,
-              height: 0,
-            ),
-            preferredSize: Size.fromHeight(4.0)),
-        elevation: 0,
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        title: Text(
-          '[So. SSul]',
-          style: TextStyle(color: kMainColor),
-        ),
-      ),
-      null,
-      AppBar(
-        bottom: PreferredSize(
-            child: Divider(
-              color: kMainColor,
-              height: 0,
-            ),
-            preferredSize: Size.fromHeight(4.0)),
-        elevation: 0,
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        title: Text(
-          '[So. SSul]',
-          style: TextStyle(color: kMainColor),
-        ),
-      ),
-      AppBar(
-        bottom: PreferredSize(
-            child: Divider(
-              color: kMainColor,
-              height: 0,
-            ),
-            preferredSize: Size.fromHeight(4.0)),
-        elevation: 0,
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        title: Text(
-          '[So. SSul]',
-          style: TextStyle(color: kMainColor),
-        ),
-      ),
-    ];
     return StoreConnector<AppState, _MainViewModel>(
       converter: (Store<AppState> store) {
         return _MainViewModel(
             appBody: store.state.appBody,
             store: store,
             onNavButtonClicked: (index) {
-              store.dispatch(GoToAnotherBody(AppBody.values[index]));
+              store.dispatch(GoToAnotherBodyAction(AppBody.values[index]));
             });
       },
-      builder: (context, vm) {
+      builder: (context, viewModel) {
         return Scaffold(
           backgroundColor: Colors.white,
-          floatingActionButton: vm.appBody.index == 1
+          floatingActionButton: viewModel.appBody.index == 1
               ? FloatingActionButton(
                   backgroundColor: Colors.white,
                   onPressed: () {
@@ -152,11 +91,11 @@ class _MainState extends State<Main> {
                   },
                   child: Icon(
                     FontAwesomeIcons.penNib,
-                    color: kBottomNavigationItemColor,
+                    color: kLightPrimaryColor,
                   ),
                 )
               : null,
-          appBar: _appBars[vm.appBody.index],
+          appBar: appBars[viewModel.appBody.index],
           body: WillPopScope(
             onWillPop: () async {
               DateTime currentTime = DateTime.now();
@@ -168,7 +107,7 @@ class _MainState extends State<Main> {
                 backButtonOnPressedTime = currentTime;
                 Fluttertoast.showToast(
                     msg: '종료하려면 한 번 더 누르세요.',
-                    backgroundColor: kBottomNavigationItemColor,
+                    backgroundColor: kLightPrimaryColor,
                     textColor: Colors.white,
                     toastLength: Toast.LENGTH_SHORT);
                 return false;
@@ -176,8 +115,8 @@ class _MainState extends State<Main> {
               return true;
             },
             child: IndexedStack(
-              index: vm.appBody.index,
-              children: _bodyWidgets,
+              index: viewModel.appBody.index,
+              children: bodyWidgets,
             ),
           ),
           bottomNavigationBar: BottomNavigationBar(
@@ -186,7 +125,7 @@ class _MainState extends State<Main> {
             showSelectedLabels: false,
             showUnselectedLabels: false,
             unselectedItemColor: Colors.grey,
-            selectedItemColor: kBottomNavigationItemColor,
+            selectedItemColor: kLightPrimaryColor,
             items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                   icon: Icon(
@@ -204,15 +143,16 @@ class _MainState extends State<Main> {
                   icon: Icon(FontAwesomeIcons.userCog, size: 40),
                   title: Text('마이 페이지')),
             ],
-            currentIndex: vm.appBody.index,
+            currentIndex: viewModel.appBody.index,
             onTap: (int index) {
-              vm.onNavButtonClicked(index);
+              viewModel.onNavButtonClicked(index);
             },
           ),
         );
       },
     );
   }
+}
 
 class _MainViewModel {
   final AppBody appBody;

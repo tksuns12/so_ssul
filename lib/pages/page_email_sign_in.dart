@@ -20,7 +20,7 @@ class _EmailSignInPageState extends State<EmailSignInPage> {
   Widget build(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
     return Material(
-      color: kMainColor,
+      color: kDarkPrimaryColor,
       child: Stack(
         children: <Widget>[
           Form(
@@ -31,7 +31,7 @@ class _EmailSignInPageState extends State<EmailSignInPage> {
                 Hero(
                     tag: 'appname',
                     child: Material(
-                        color: kMainColor,
+                        color: kDarkPrimaryColor,
                         child: Text(
                           'So.SSul',
                           style: TextStyle(fontSize: 50, color: Colors.white),

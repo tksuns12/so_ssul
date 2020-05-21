@@ -73,7 +73,7 @@ class HomeBody extends StatelessWidget {
             ],
           ),
         ),
-        Divider(color: kMainColor, height: 0, thickness: 1,),
+        Divider(color: kDarkPrimaryColor, height: 0, thickness: 1,),
       ],
     );
   }

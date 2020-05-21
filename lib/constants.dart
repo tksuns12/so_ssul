@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 const kInitialPoint = 1000;
-const kMainColor = Color(0xFF00bcd4);
-const kBottomNavigationItemColor = Color(0xFFb2ebf2);
+const kDarkPrimaryColor = Color(0xFF0096a7);
+const kPrimaryColor = Color(0xFF00bcd4);
+const kLightPrimaryColor = Color(0xFFb2ebf2);
+const kTextIconsColor = Colors.white;
+const kAccentColor = Color(0xFF009688);
 
 enum AppBody{Home, List, LeaderBoard, Settings}
 

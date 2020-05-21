@@ -67,7 +67,7 @@ class _RoomMakingPageState extends State<RoomMakingPage> {
       child: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
-            backgroundColor: kMainColor,
+            backgroundColor: kDarkPrimaryColor,
             expandedHeight: 350,
             actions: <Widget>[
               IconButton(
@@ -165,7 +165,7 @@ class LabeledCheckBoxState extends State<LabeledCheckBox> {
     return Row(
       children: <Widget>[
         Theme(
-          data: ThemeData(unselectedWidgetColor: kMainColor),
+          data: ThemeData(unselectedWidgetColor: kDarkPrimaryColor),
           child: Checkbox(
               activeColor: Colors.white,
               checkColor: Colors.red,
@@ -206,7 +206,7 @@ class _LabeledRadioButtonsState extends State<LabeledRadioButtons> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Radio(
-              activeColor: kMainColor,
+              activeColor: kDarkPrimaryColor,
               value: 0,
               groupValue: _enjoyOrNot,
               onChanged: (value) {
@@ -222,7 +222,7 @@ class _LabeledRadioButtonsState extends State<LabeledRadioButtons> {
             width: 20,
           ),
           Radio(
-            activeColor: kMainColor,
+            activeColor: kDarkPrimaryColor,
             value: 1,
             groupValue: _enjoyOrNot,
             onChanged: (value) {

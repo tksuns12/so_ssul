@@ -10,51 +10,24 @@ class AppInitializeAction {
   AppInitializeAction({this.isInitialized, this.currentUser});
 }
 
-class UpdateProfilePictureAction {
-  final String pictureUrl;
-
-  UpdateProfilePictureAction(this.pictureUrl);
-}
-
-class InitNovelListAction {
-  final List<DocumentSnapshot> novelList;
-
-  InitNovelListAction(this.novelList);
-}
-
-class AddMoreNovelsAction {
-  final List<DocumentSnapshot> extraNovelList;
-
-  AddMoreNovelsAction(this.extraNovelList);
-}
-
-class OpenRoomAction {
-  final RoomInfo roomInfo;
-
-  OpenRoomAction(this.roomInfo);
-}
-
-class RefreshNovelListAction {}
-
-class RefreshRoomAction {}
-
 class SignInWithEmailAction {}
+
+class SignInWithEmailFailedAction {
+  final Exception error;
+
+  SignInWithEmailFailedAction(this.error);
+}
 
 class SignInWithGoogleAction {}
 
-class SetProfilePictureAction{
-  final String url;
+class SignInWithGoogleFailedAciton {
+  final Exception error;
 
-  SetProfilePictureAction(this.url);
+  SignInWithGoogleFailedAciton(this.error);
 }
 
-class SetRoomInfo{
-  
-
-}
-class GoToAnotherBody{
+class GoToAnotherBodyAction {
   final AppBody appBody;
 
-  GoToAnotherBody(this.appBody);
-
+  GoToAnotherBodyAction(this.appBody);
 }
