@@ -4,14 +4,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sossul/database.dart';
 
+import '../constants.dart';
+
 @immutable
 class AppState {
   final bool isInitialized;
-
+  final AppBody appBody;
   final UserState userState;
   final NovelListState novelListState;
 
   AppState({
+    this.appBody,
     this.isInitialized,
     this.userState,
     this.novelListState,
@@ -19,16 +22,19 @@ class AppState {
 
   factory AppState.initial() {
     return AppState(
+        appBody: AppBody.Home,
         isInitialized: false,
         userState: UserState.initial(),
         novelListState: NovelListState.initial());
   }
 
-  AppState copyWith({isInitialized, userState, novelListState, authState}) {
+  AppState copyWith(
+      {isInitialized, userState, novelListState, authState, appBody}) {
     return AppState(
       isInitialized: isInitialized ?? this.isInitialized,
       userState: userState ?? this.userState,
       novelListState: novelListState ?? this.novelListState,
+      appBody: appBody ?? this.appBody,
     );
   }
 }

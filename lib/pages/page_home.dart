@@ -1,20 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:sossul/constants.dart';
 
-class HomeBody extends StatefulWidget {
-  final Function changeMainState;
-  final FirebaseUser currentUser;
-
-  const HomeBody({Key key, this.changeMainState, this.currentUser})
-      : super(key: key);
-
-  @override
-  _HomeBodyState createState() => _HomeBodyState();
-}
-
-class _HomeBodyState extends State<HomeBody> {
+class HomeBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -70,7 +58,6 @@ class _HomeBodyState extends State<HomeBody> {
                           ),
                         ),
                         onPressed: () {
-                          widget.changeMainState(1);
                           // TODO: 여기에 해당 선택한 장르로 필터링 해서 리스트뷰로 넘겨주는 동작 구현해주세요
                         },
                       );
