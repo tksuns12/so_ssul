@@ -28,7 +28,7 @@ class SignInPage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => EmailSignIn(),
+                  builder: (context) => EmailSignInPage(),
                 ),
               );
             },

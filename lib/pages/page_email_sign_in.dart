@@ -5,12 +5,12 @@ import 'package:sossul/authentication.dart';
 import 'package:sossul/constants.dart';
 import 'package:sossul/pages/page_create_account.dart';
 
-class EmailSignIn extends StatefulWidget {
+class EmailSignInPage extends StatefulWidget {
   @override
-  _EmailSignInState createState() => _EmailSignInState();
+  _EmailSignInPageState createState() => _EmailSignInPageState();
 }
 
-class _EmailSignInState extends State<EmailSignIn> {
+class _EmailSignInPageState extends State<EmailSignInPage> {
   Authentication _authentication = GetIt.I.get<Authentication>();
   String email;
   String password;

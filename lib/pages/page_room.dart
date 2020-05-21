@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 class RoomPage extends StatelessWidget {
-  final roomID;
-  const RoomPage({Key key,@required this.roomID}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(

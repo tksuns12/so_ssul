@@ -9,18 +9,17 @@ import 'package:sossul/pages/page_home.dart';
 import 'package:sossul/pages/page_launch.dart';
 import 'package:sossul/pages/page_list.dart';
 import 'package:get_it/get_it.dart';
+import 'package:sossul/pages/page_profile.dart';
 import 'package:sossul/pages/page_room_making/page_room_making.dart';
 import 'package:sossul/reducers/reducers.dart';
+import 'package:sossul/routes.dart';
 import 'package:sossul/store/app_state.dart';
 
 import 'database.dart';
 
 void main() {
-  final store = Store<AppState>(
-    appReducer,
-    initialState: AppState.initial(),
-    middleware: [thunkMiddleware]
-  );
+  final store = Store<AppState>(appReducer,
+      initialState: AppState.initial(), middleware: [thunkMiddleware]);
 
   setupSingletons();
   runApp(MyApp());
@@ -39,6 +38,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      routes: Routes.getRoutes(),
       home: LaunchPage(),
     );
   }
@@ -61,17 +61,10 @@ class _MainState extends State<Main> {
   void initState() {
     super.initState();
     _bodyWidgets = <Widget>[
-      HomeBody(
-        changeMainState: setSelectedPage,
-        currentUser: widget.currentUser,
-      ),
-      ListPage(
-        currentUser: widget.currentUser,
-      ),
+      HomeBody(),
+      ListPage(),
       Container(),
-      ProfilePage(
-        currentUser: widget.currentUser,
-      ),
+      SettingsPage(),
     ];
   }
 

@@ -11,8 +11,6 @@ import 'package:sossul/pages/page_room.dart';
 import '../database.dart';
 
 class ListPage extends StatefulWidget {
-  final FirebaseUser currentUser;
-  const ListPage({Key key, this.currentUser}) : super(key: key);
 
   @override
   _ListPageState createState() => _ListPageState();

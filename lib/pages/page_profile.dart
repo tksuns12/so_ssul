@@ -9,23 +9,17 @@ import 'package:sossul/constants.dart';
 import 'package:sossul/database.dart';
 import 'package:image_cropper/image_cropper.dart';
 
-class ProfilePage extends StatelessWidget {
-  final FirebaseUser currentUser;
-
-  const ProfilePage({Key key, @required this.currentUser}) : super(key: key);
+class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
     return Container(
         child: ProfilePicture(
-      currentUser: currentUser,
     ));
   }
 }
 
 class ProfilePicture extends StatefulWidget {
-  final FirebaseUser currentUser;
-  const ProfilePicture({Key key, @required this.currentUser}) : super(key: key);
 
   @override
   _ProfilePictureState createState() => _ProfilePictureState();
