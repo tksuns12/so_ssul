@@ -5,7 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sossul/constants.dart';
-import 'package:sossul/pages/routes.dart';
+import 'package:sossul/routes.dart';
 
 enum HeartType { Novel, Sentence, Comment }
 enum SortingOption { Date, Participatable, Likes }
@@ -578,8 +578,7 @@ class DBManager {
                   } else if (_formKey.currentState.validate()) {
                     setUserNickName(
                         currentUser: currentUser, nickName: _nickName);
-                    Navigator.of(context).pushAndRemoveUntil(
-                        mainRoute(currentUser), (route) => false);
+                    Navigator.of(context).pushNamedAndRemoveUntil(Routes.main, (route) => false);
                   }
                 },
                 child: Text('확인'))

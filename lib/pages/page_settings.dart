@@ -2,9 +2,12 @@ import 'dart:io';
 
 import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get_it/get_it.dart';
+import 'package:redux/redux.dart';
 import 'package:sossul/constants.dart';
 import 'package:sossul/database.dart';
+import 'package:sossul/store/app_state.dart';
 
 class SettingsPage extends StatelessWidget {
 
@@ -16,74 +19,10 @@ class SettingsPage extends StatelessWidget {
   }
 }
 
-class ProfilePicture extends StatefulWidget {
-
-  @override
-  _ProfilePictureState createState() => _ProfilePictureState();
-}
-
-class _ProfilePictureState extends State<ProfilePicture> {
-  DBManager _dbManager = GetIt.I.get<DBManager>();
-  Map userInfo;
-  String imageUrl;
-  File _imageFile;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
+class ProfilePicture extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-//    _loadPictureFromServer();
-    return StreamBuilder(
-        stream: _dbManager.loadUserInfoStream(user: widget.currentUser),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            imageUrl = snapshot.data[DBKeys.kUserProfilePictureKey];
-            if (imageUrl != null) {
-              return CircularProfileAvatar(
-                imageUrl,
-                backgroundColor: kDarkPrimaryColor,
-                initialsText: Text('.'),
-                radius: 30,
-                onTap: () async {
-                  await _pickImage();
-                  await _cropImage();
-                  await _dbManager.setProfilePicture(
-                      _imageFile, widget.currentUser);
-                },
-                cacheImage: true,
-                elevation: 1.0,
-                borderColor: kDarkPrimaryColor,
-                borderWidth: 1,
-              );
-            } else {
-              return FlatButton(
-                              onPressed: () async { 
-                  await _pickImage();
-                  await _cropImage();
-                  await _dbManager.setProfilePicture(
-                      _imageFile, widget.currentUser); },
-                              child: CircleAvatar(
-                radius: 30,
-                backgroundColor: kDarkPrimaryColor,
-            ),
-              );
-            }
-          } else {
-            return FlatButton(
-                              onPressed: () async { 
-                  await _pickImage();
-                  await _cropImage();
-                  await _dbManager.setProfilePicture(
-                      _imageFile, widget.currentUser); },
-                              child: CircleAvatar(
-                radius: 30,
-                backgroundColor: kDarkPrimaryColor,
-            ),
-              );
-          }
-        });
+    return StoreConnector<AppState, String>(converter: (Store<AppState> store) => store.state.,);
   }
+
 }

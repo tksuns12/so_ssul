@@ -4,18 +4,22 @@ import 'package:flutter/material.dart';
 @immutable
 class UserState {
   final FirebaseUser currentUser;
-  final isSignedIn;
-  final isSigningIn;
-  final isSignedInFailed;
+  final bool isSignedIn;
+  final bool isSigningIn;
+  final bool isSignedInFailed;
+  final error;
 
   UserState(
-      {this.isSigningIn,
+      {
+      this.error,
+      this.isSigningIn,
       this.currentUser,
       this.isSignedIn,
       this.isSignedInFailed});
 
   factory UserState.initial() {
     return UserState(
+        error: null,
         currentUser: null,
         isSignedIn: false,
         isSignedInFailed: false,
@@ -24,6 +28,7 @@ class UserState {
 
   UserState copyWith({currentUser, isSignedIn, isSignedInFailed, isSigningIn}) {
     return UserState(
+        error: error ?? this.error,
         currentUser: currentUser ?? this.currentUser,
         isSigningIn: isSignedIn ?? this.isSignedIn,
         isSignedInFailed: isSignedInFailed ?? this.isSignedInFailed,
@@ -35,7 +40,8 @@ class UserState {
     return this.currentUser.hashCode ^
         this.isSignedIn.hashCode ^
         this.isSignedInFailed.hashCode ^
-        this.isSigningIn.hashCode;
+        this.isSigningIn.hashCode ^
+        this.error;
   }
 
   @override
@@ -46,6 +52,7 @@ class UserState {
             this.isSigningIn == other.isSigningIn &&
             this.isSignedInFailed == other.isSignedInFailed &&
             this.isSignedIn == other.isSignedIn &&
-            this.currentUser == other.currentUser;
+            this.currentUser == other.currentUser &&
+            this.error == other.error;
   }
 }

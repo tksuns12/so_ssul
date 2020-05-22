@@ -1,15 +1,14 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sossul/authentication.dart';
 import 'package:sossul/constants.dart';
 import 'package:sossul/pages/page_sign_in.dart';
-import 'package:sossul/pages/routes.dart';
 import 'package:sossul/pages/splash_animation.dart';
 import 'package:sossul/database.dart';
+import 'package:sossul/routes.dart';
 
 const kIsVirgin = "IsVirgin";
 
@@ -44,7 +43,7 @@ class _LaunchPageState extends State<LaunchPage> {
         _dbManager = GetIt.I.get<DBManager>();
         await _dbManager.onExecuteApp(currentUser: _currentUser);
         Navigator.of(context)
-            .pushAndRemoveUntil(mainRoute(_currentUser), (route) => false);
+            .pushNamedAndRemoveUntil(Routes.main, (route) => false);
       }
     }
   }

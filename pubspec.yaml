@@ -39,7 +39,6 @@ dependencies:
   fluttertoast: ^4.0.1
   redux: ^4.0.0
   flutter_redux: ^0.6.0
-  redux_thunk: ^0.3.0
 
 dev_dependencies:
   flutter_test:

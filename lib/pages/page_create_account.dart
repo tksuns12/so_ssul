@@ -1,7 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:get_it/get_it.dart';
+import 'package:redux/redux.dart';
+import 'package:sossul/actions/actions.dart';
 import 'package:sossul/database.dart';
+import 'package:sossul/routes.dart';
+import 'package:sossul/store/app_state.dart';
 
 import '../authentication.dart';
 import '../constants.dart';
@@ -23,113 +28,112 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: kDarkPrimaryColor,
+        color: kDarkPrimaryColor,
         child: Stack(
-      children: <Widget>[
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Hero(
-                tag: 'appname',
-                child: Material(
-                    color: kDarkPrimaryColor,
-                    child: Text(
-                      'So.SSul',
-                      style: TextStyle(fontSize: 50, color: Colors.white),
-                    ))),
-            Row(
+            Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Icon(Icons.email),
-                Column(
+                Hero(
+                    tag: 'appname',
+                    child: Material(
+                        color: kDarkPrimaryColor,
+                        child: Text(
+                          'So.SSul',
+                          style: TextStyle(fontSize: 50, color: Colors.white),
+                        ))),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(
-                      width: 250,
-                      child: TextField(
-                        keyboardType: TextInputType.emailAddress,
-                        onChanged: (text) {
-                          email = text;
-                        },
-                      ),
-                    ),
+                    Icon(Icons.email),
+                    Column(
+                      children: <Widget>[
+                        SizedBox(
+                          width: 250,
+                          child: TextField(
+                            keyboardType: TextInputType.emailAddress,
+                            onChanged: (text) {
+                              email = text;
+                            },
+                          ),
+                        ),
+                      ],
+                    )
                   ],
-                )
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(Icons.vpn_key),
-                Column(
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(
-                      width: 250,
-                      child: TextField(
-                        textInputAction: TextInputAction.done,
-                        maxLength: 12,
-                        obscureText: true,
-                        onChanged: (text) {
-                          password = text;
-                        },
-                        onSubmitted: (text) async {
-
-                          setState(() {
-                            isLoading = true;
-                          });
-                          await _authorization
-                              .createEmailAccount(
+                    Icon(Icons.vpn_key),
+                    Column(
+                      children: <Widget>[
+                        SizedBox(
+                          width: 250,
+                          child: TextField(
+                            textInputAction: TextInputAction.done,
+                            maxLength: 12,
+                            obscureText: true,
+                            onChanged: (text) {
+                              password = text;
+                            },
+                            onSubmitted: (text) async {
+                              setState(() {
+                                isLoading = true;
+                              });
+                              await _authorization
+                                  .createEmailAccount(
+                                      context: context,
+                                      email: email.trim(),
+                                      password: password)
+                                  .then((value) async {
+                                FirebaseUser _currentUser =
+                                    await _authorization.auth.currentUser();
+                                setState(() {
+                                  isLoading = false;
+                                });
+                                setNickNameDialog(context, _currentUser);
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: FlatButton(
+                    child: Container(
+                      child: Text('계정 만들기'),
+                    ),
+                    onPressed: () async {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      await _authorization
+                          .createEmailAccount(
                               context: context,
                               email: email.trim(),
                               password: password)
-                              .then((value) async {
-                            FirebaseUser _currentUser =
+                          .then((value) async {
+                        FirebaseUser _currentUser =
                             await _authorization.auth.currentUser();
-                            setState(() {
-                              isLoading = false;
-                            });
-                            setNickNameDialog(context, _currentUser);
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                )
+                        setState(() {
+                          isLoading = false;
+                        });
+                        setNickNameDialog(context, _currentUser);
+                      });
+                    },
+                  ),
+                ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: FlatButton(
-                child: Container(
-                  child: Text('계정 만들기'),
-                ),
-                onPressed: () async {
-                  setState(() {
-                    isLoading = true;
-                  });
-                  await _authorization
-                      .createEmailAccount(
-                          context: context,
-                          email: email.trim(),
-                          password: password)
-                      .then((value) async {
-                    FirebaseUser _currentUser =
-                        await _authorization.auth.currentUser();
-                    setState(() {
-                      isLoading = false;
-                    });
-                    setNickNameDialog(context, _currentUser);
-                  });
-                },
-              ),
+            Visibility(
+              child: Center(child: CircularProgressIndicator()),
+              visible: isLoading,
             ),
           ],
-        ),
-        Visibility(
-          child: Center(child: CircularProgressIndicator()),
-          visible: isLoading,
-        ),
-      ],
-    ));
+        ));
   }
 
   Future setNickNameDialog(BuildContext context, FirebaseUser _currentUser) {
@@ -165,36 +169,61 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
             ],
           ),
           actions: <Widget>[
-            FlatButton(
-                onPressed: () async {
-                  bool isAlreadyUsed =
-                      await dbManager.nickNameAlreadyUsed(nickName: _nickName);
-                  if (isAlreadyUsed) {
-                    showDialog(
-                      context: context,
-                      child: AlertDialog(
-                        title: Text("별명 중복"),
-                        content: Text('이미 있는 별명입니다.'),
-                        actions: <Widget>[
-                          FlatButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('확인'),
-                          ),
-                        ],
-                      ),
-                    );
-                  } else if (_formKey.currentState.validate()) {
-                    dbManager.setUserNickName(
-                        currentUser: _currentUser, nickName: _nickName);
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (context) => Main()),
-                        (route) => false);
-                  }
-                },
-                child: Text('확인'))
+            StoreConnector<AppState, _ViewModel>(
+              converter: (Store<AppState> store) =>
+                  store.dispatch(SignInWithEmailAction()),
+              builder: (context, callback) => FlatButton(
+                  onPressed: () async {
+                    bool isAlreadyUsed = await dbManager.nickNameAlreadyUsed(
+                        nickName: _nickName);
+                    if (isAlreadyUsed) {
+                      showDialog(
+                        context: context,
+                        child: AlertDialog(
+                          title: Text("별명 중복"),
+                          content: Text('이미 있는 별명입니다.'),
+                          actions: <Widget>[
+                            FlatButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('확인'),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else if (_formKey.currentState.validate()) {
+                      dbManager.setUserNickName(
+                          currentUser: _currentUser, nickName: _nickName);
+
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          Routes.main, (route) => false);
+                    }
+                  },
+                  child: Text('확인')),
+            )
           ],
         ));
+  }
+}
+
+class _ViewModel {
+  final Function intoSignIn;
+  final bool isSignedIn;
+  final bool isSigningIn;
+  final bool isSignInFailed;
+
+  _ViewModel(
+      {this.intoSignIn,
+      this.isSignedIn,
+      this.isSigningIn,
+      this.isSignInFailed});
+
+  factory _ViewModel.fromStore(Store<AppState> store) {
+    return _ViewModel(
+        intoSignIn: store.dispatch(SignInWithEmailAction()),
+        isSignedIn: store.state.userState.isSignedIn,
+        isSigningIn: store.state.userState.isSigningIn,
+        isSignInFailed: store.state.userState.isSignedInFailed);
   }
 }

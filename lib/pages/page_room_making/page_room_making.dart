@@ -4,7 +4,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sossul/constants.dart';
 import 'package:sossul/database.dart';
-import 'room_making_actions.dart';
 
 
 class RoomMakingPage extends StatefulWidget {

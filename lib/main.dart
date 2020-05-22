@@ -4,7 +4,6 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:redux/redux.dart';
-import 'package:redux_thunk/redux_thunk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sossul/actions/actions.dart';
 import 'package:sossul/authentication.dart';
@@ -12,16 +11,17 @@ import 'package:sossul/constants.dart';
 import 'package:sossul/pages/page_launch.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sossul/pages/page_room_making/page_room_making.dart';
+import 'package:sossul/pages/splash_animation.dart';
 import 'package:sossul/reducers/reducers.dart';
 import 'package:sossul/routes.dart';
 import 'package:sossul/store/app_state.dart';
-
+import 'package:sossul/middleware/firestore_middelwares.dart';
 import 'appBodies/appBodies.dart';
 import 'database.dart';
 
 void main() {
   final store = Store<AppState>(appReducer,
-      initialState: AppState.initial(), middleware: [thunkMiddleware]);
+      initialState: AppState.initial(), middleware: getMiddleware());
 
   setupSingletons();
   runApp(StoreProvider(store: store, child: MyApp()));
@@ -44,14 +44,16 @@ class MyApp extends StatelessWidget {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         FirebaseUser currentUser = await _authentication.auth.currentUser();
         bool isInitialized = prefs.getBool(kIsVirgin) ?? true;
-        store.dispatch(AppInitializeAction(
+        store.dispatch(InitCheckAction(
             currentUser: currentUser, isInitialized: isInitialized));
       },
       builder: (context, isInitialized) {
-        return MaterialApp(
-          routes: Routes.getRoutes(),
-          home: isInitialized ? LaunchPage() : Main(),
-        );
+        return isInitialized
+            ? MaterialApp(
+                routes: Routes.getRoutes(),
+                home: isInitialized ? LaunchPage() : Main(),
+              )
+            : SplashAnimation1();
       },
       converter: (store) => store.state.isInitialized,
     );

@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sossul/database.dart';
-import 'pages/routes.dart';
+import 'package:sossul/routes.dart';
 
 class Authentication {
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -28,7 +28,7 @@ class Authentication {
             if (userInfo == null) {
               _dbManager.createNewUserInfo(currentUser: currentUser, context: context);
             } else {
-              Navigator.of(context).pushAndRemoveUntil(mainRoute(currentUser), (route) => false);
+              Navigator.of(context).pushNamedAndRemoveUntil(Routes.main, (route) => false);
             }
           }
 
@@ -83,7 +83,7 @@ class Authentication {
         if (userInfo == null) {
           _dbManager.createNewUserInfo(currentUser: currentUser, context: context);
         } else {
-          Navigator.of(context).pushAndRemoveUntil(mainRoute(currentUser), (route) => false);
+          Navigator.of(context).pushNamedAndRemoveUntil(Routes.main, (route) => false);
         }
       }
 

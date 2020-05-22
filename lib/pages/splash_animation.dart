@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:redux/redux.dart';
+import 'package:sossul/constants.dart';
 import 'package:sossul/pages/page_sign_in.dart';
+import 'package:sossul/store/app_state.dart';
+import 'package:sossul/actions/actions.dart';
 
 class SplashAnimation1 extends StatefulWidget {
   @override
@@ -19,7 +24,7 @@ class _SplashAnimation1State extends State<SplashAnimation1>
       duration: Duration(seconds: 1),
       vsync: this,
     );
-    animation = ColorTween(begin: Colors.black45, end: Colors.purpleAccent)
+    animation = ColorTween(begin: Colors.black45, end: kPrimaryColor)
         .animate(controller);
     controller.forward();
     controller.addListener(() {
@@ -39,16 +44,7 @@ class _SplashAnimation1State extends State<SplashAnimation1>
   Widget build(BuildContext context) {
     return Container(
       color: animation.value,
-      child: Center(
-        child: Hero(
-          child: Icon(
-            Icons.book,
-            size: 100,
-            color: Colors.white,
-          ),
-          tag: 'logo',
-        ),
-      ),
+      child: Center(),
     );
   }
 }
@@ -69,16 +65,6 @@ class _SplashAnimation2State extends State<SplashAnimation2> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Hero(
-                  tag: 'logo',
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Icon(
-                      Icons.book,
-                      size: 50,
-                      color: Colors.white,
-                    ),
-                  )),
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: TypewriterAnimatedTextKit(

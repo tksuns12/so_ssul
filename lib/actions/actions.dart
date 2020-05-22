@@ -1,16 +1,21 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:sossul/models/room_model.dart';
 import 'package:sossul/constants.dart';
 
-class AppInitializeAction {
+class InitCheckAction {
   final bool isInitialized;
   final FirebaseUser currentUser;
 
-  AppInitializeAction({this.isInitialized, this.currentUser});
+  InitCheckAction({this.isInitialized, this.currentUser});
 }
 
 class SignInWithEmailAction {}
+
+class SignInWithEmailCompleteAction{
+  final FirebaseUser currentUser;
+
+  SignInWithEmailCompleteAction(this.currentUser);
+}
 
 class SignInWithEmailFailedAction {
   final Exception error;
@@ -20,10 +25,16 @@ class SignInWithEmailFailedAction {
 
 class SignInWithGoogleAction {}
 
-class SignInWithGoogleFailedAciton {
+class SignInWithGoogleCompleteAction{
+  final FirebaseUser currentUser;
+
+  SignInWithGoogleCompleteAction(this.currentUser);
+}
+
+class SignInWithGoogleFailedAction {
   final Exception error;
 
-  SignInWithGoogleFailedAciton(this.error);
+  SignInWithGoogleFailedAction(this.error);
 }
 
 class GoToAnotherBodyAction {
